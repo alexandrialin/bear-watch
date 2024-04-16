@@ -34,7 +34,9 @@ export default function Page() {
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/6bb29b2210b72bb60054df6177f92b575a75b6cfd346dfffb9dafd1ae26018df?"
           className="shrink-0 w-6 aspect-square"
         />
+        <Link href="find-buddy">
         <div className="flex-auto my-auto">Find Buddy</div>
+        </Link>
       </div>
       <div className="flex gap-3 px-6 py-3 mt-3.5 max-w-full text-base font-bold text-center text-amber-400 rounded-xl border-2 border-amber-400 border-solid w-[225px]">
         <img

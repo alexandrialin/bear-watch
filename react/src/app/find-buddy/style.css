@@ -1,0 +1,36 @@
+.background{
+    width: 390px;
+    height: 844px; 
+    background-color: #081F45;
+    display: flex;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.location-input {
+    position: absolute;
+    top: 15%;
+    display: flex;
+    flex-direction: column;
+}
+
+.start {
+    margin: 10px; 
+}
+
+.end{
+    margin: 10px;
+}
+
+.submit{
+    position: absolute;
+    bottom: 15%;
+}
+
+.back-btn{
+    color: white;
+    position: absolute;
+    left: 25%;
+    top: 3%;
+}
