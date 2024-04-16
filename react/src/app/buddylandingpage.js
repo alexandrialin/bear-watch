@@ -1,6 +1,6 @@
 import * as React from "react";
 
-function MyComponent() {
+function Buddy() {
   return (
     <main>
       <div class="background">
@@ -15,4 +15,4 @@ function MyComponent() {
 
 
 
-export default MyComponent
+export default Buddy

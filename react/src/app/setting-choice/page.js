@@ -1,6 +1,6 @@
 import * as React from "react";
-
-function MyComponent() {
+import Link from 'next/link';
+export default function SettingChoice() {
   return (
     <div className="flex flex-col justify-center mx-auto w-full max-w-[480px]">
       <div className="flex flex-col justify-end items-center pt-12 pr-20 pb-20 pl-6 w-full bg-sky-950">
@@ -37,5 +37,4 @@ function MyComponent() {
     </div>
   );
 }
-
 

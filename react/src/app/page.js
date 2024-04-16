@@ -1,6 +1,8 @@
 import * as React from "react";
+import Link from 'next/link';
 
-function MyComponent() {
+
+export default function Page() {
   return (
     <div className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto w-full bg-sky-950 max-w-[480px]"
     style={{ backgroundColor: '#081F45' }}>
@@ -43,11 +45,15 @@ function MyComponent() {
         <div className="flex-auto my-auto">Report Incident</div>
       </div>
       <div className="flex gap-5 justify-between self-stretch mt-32">
+      <Link href="setting-choice">
         <img
           loading="lazy"
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/2292f9355b700c51215fb38c2c954c4651fccba3e6ca081eea8c72a0eb4b3c32?"
           className="shrink-0 aspect-[0.95] w-[60px]"
+          
         />
+        </Link>
+        
         <img
           loading="lazy"
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/a774e0177463daa7b0936e36ccdd9291374814fdb316bedf400a74ecd0b8b6f6?"
@@ -63,4 +69,3 @@ function MyComponent() {
 
 
 
-export default MyComponent
