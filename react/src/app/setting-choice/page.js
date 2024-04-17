@@ -1,22 +1,29 @@
 import * as React from "react";
 import Link from 'next/link';
-export default function SettingChoice() {
+
+export default function MyComponent() {
   return (
     <div className="flex flex-col justify-center mx-auto w-full max-w-[480px]">
-      <div className="flex flex-col justify-end items-center pt-12 pr-20 pb-20 pl-6 w-full bg-sky-950">
-        <div className="flex gap-5 self-start whitespace-nowrap">
-          <div className="overflow-hidden relative flex-col justify-center items-start px-4 my-auto text-xl text-white aspect-[4] w-[60px]">
-            <img
-              loading="lazy"
-              srcSet="https://cdn.builder.io/api/v1/image/assets/TEMP/61bff142275936bc28ef58f7f836c661e04a5b9aca3b2194b10baecd24eee519?apiKey=308dd41c1b654e0d93a9458741b2ee85&width=100 100w, https://cdn.builder.io/api/v1/image/assets/TEMP/61bff142275936bc28ef58f7f836c661e04a5b9aca3b2194b10baecd24eee519?apiKey=308dd41c1b654e0d93a9458741b2ee85&width=200 200w, https://cdn.builder.io/api/v1/image/assets/TEMP/61bff142275936bc28ef58f7f836c661e04a5b9aca3b2194b10baecd24eee519?apiKey=308dd41c1b654e0d93a9458741b2ee85&width=400 400w, https://cdn.builder.io/api/v1/image/assets/TEMP/61bff142275936bc28ef58f7f836c661e04a5b9aca3b2194b10baecd24eee519?apiKey=308dd41c1b654e0d93a9458741b2ee85&width=800 800w, https://cdn.builder.io/api/v1/image/assets/TEMP/61bff142275936bc28ef58f7f836c661e04a5b9aca3b2194b10baecd24eee519?apiKey=308dd41c1b654e0d93a9458741b2ee85&width=1200 1200w, https://cdn.builder.io/api/v1/image/assets/TEMP/61bff142275936bc28ef58f7f836c661e04a5b9aca3b2194b10baecd24eee519?apiKey=308dd41c1b654e0d93a9458741b2ee85&width=1600 1600w, https://cdn.builder.io/api/v1/image/assets/TEMP/61bff142275936bc28ef58f7f836c661e04a5b9aca3b2194b10baecd24eee519?apiKey=308dd41c1b654e0d93a9458741b2ee85&width=2000 2000w, https://cdn.builder.io/api/v1/image/assets/TEMP/61bff142275936bc28ef58f7f836c661e04a5b9aca3b2194b10baecd24eee519?apiKey=308dd41c1b654e0d93a9458741b2ee85&"
-              className="object-cover absolute inset-0 size-full"
-            />
-            Back
-          </div>
-          <div className="flex-auto text-2xl font-semibold text-center text-amber-400">
-            Settings
+      <div className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto w-full bg-sky-950 max-w-[480px]"
+      style={{ backgroundColor: '#081F45' }}>
+        <div className="flex flex-row">
+          <div className="flex flex-row mr-36">
+            <div className="box-border relative shrink-0 my-auto mr-16 ml-10 h-auto text-left max-sm:mr-14 max-sm:text-xl">
+              <p>
+              <Link href="/">
+                <strong className="text-white">&lt; Back</strong>
+                </Link>
+              </p>
+            </div>
+            <div className="flex-auto mx-auto mt-px text-2xl font-semibold text-center text-amber-400">
+              Settings
+            </div>
           </div>
         </div>
+        <div className="flex flex-row w-full">
+          <div className="flex gap-5 self-start mr-16 whitespace-nowrap" />
+        </div>
+        <Link href="/privacy">
         <div className="flex flex-col justify-center px-10 py-12 mt-40 max-w-full text-base font-semibold text-center bg-white rounded-xl border border-amber-400 border-solid text-sky-950 w-[200px]">
           <img
             loading="lazy"
@@ -25,6 +32,8 @@ export default function SettingChoice() {
           />
           <div className="mt-3.5">Privacy Settings</div>
         </div>
+        </Link>
+        <Link href="/bot-setup">
         <div className="flex flex-col px-12 pt-7 pb-12 mt-9 mb-24 max-w-full text-base font-semibold text-center bg-amber-400 rounded-xl border border-black border-solid text-sky-950 w-[200px]">
           <img
             loading="lazy"
@@ -33,8 +42,10 @@ export default function SettingChoice() {
           />
           <div className="mt-4">Bot Call Setup</div>
         </div>
+        </Link>
       </div>
     </div>
   );
 }
+
 
