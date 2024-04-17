@@ -1,24 +1,31 @@
 import * as React from "react";
-import Link from 'next/link';
-
+import Link from "next/link";
 
 export default function Page() {
   return (
-    <div className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto w-full bg-sky-950 max-w-[480px]"
-    style={{ backgroundColor: '#081F45' }}>
+    <div
+      className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto w-full bg-sky-950 max-w-[480px]"
+      style={{ backgroundColor: "#081F45" }}
+    >
       <img
         loading="lazy"
         src="https://i.postimg.cc/8kM7NtnF/logo.png"
-        style={{ width: '300px', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
+        style={{
+          width: "300px",
+          height: "auto",
+          maxWidth: "100%",
+          maxHeight: "100%",
+        }}
       />
-      <div className="flex gap-5 items-start px-8 pt-3 pb-5 mt-68 max-w-full text-base font-semibold text-center bg-amber-400 rounded-xl text-sky-950 w-[225px]"
-      >
+      <div className="flex gap-5 items-start px-8 pt-3 pb-5 mt-68 max-w-full text-base font-semibold text-center bg-amber-400 rounded-xl text-sky-950 w-[225px]">
         <img
           loading="lazy"
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/4854920f43cabd037b09cfdb7e7b35d945ca5881f81c0356dcd0603c987da073?"
           className="shrink-0 w-6 aspect-square"
         />
-        <div className="flex-auto mt-1.5">Bot Call</div>
+        <Link href="bot-call">
+          <div className="flex-auto mt-1.5">Bot Call</div>
+        </Link>
       </div>
       <div className="flex gap-5 px-8 py-4 mt-3.5 max-w-full text-base font-semibold text-center bg-amber-400 rounded-xl text-sky-950 w-[225px]">
         <img
@@ -37,7 +44,7 @@ export default function Page() {
           className="shrink-0 w-6 aspect-square"
         />
         <Link href="find-buddy">
-        <div className="flex-auto my-auto">Find Buddy</div>
+          <div className="flex-auto my-auto">Find Buddy</div>
         </Link>
       </div>
       <div className="flex gap-3 px-6 py-3 mt-3.5 max-w-full text-base font-bold text-center text-amber-400 rounded-xl border-2 border-amber-400 border-solid w-[225px]">
@@ -49,15 +56,14 @@ export default function Page() {
         <div className="flex-auto my-auto">Report Incident</div>
       </div>
       <div className="flex gap-5 justify-between self-stretch mt-32">
-      <Link href="setting-choice">
-        <img
-          loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/2292f9355b700c51215fb38c2c954c4651fccba3e6ca081eea8c72a0eb4b3c32?"
-          className="shrink-0 aspect-[0.95] w-[60px]"
-          
-        />
+        <Link href="setting-choice">
+          <img
+            loading="lazy"
+            src="https://cdn.builder.io/api/v1/image/assets/TEMP/2292f9355b700c51215fb38c2c954c4651fccba3e6ca081eea8c72a0eb4b3c32?"
+            className="shrink-0 aspect-[0.95] w-[60px]"
+          />
         </Link>
-        
+
         <img
           loading="lazy"
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/a774e0177463daa7b0936e36ccdd9291374814fdb316bedf400a74ecd0b8b6f6?"
@@ -67,9 +73,3 @@ export default function Page() {
     </div>
   );
 }
-
-
-
-
-
-
