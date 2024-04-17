@@ -33,7 +33,7 @@ export default function Page() {
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/6192c559cc64b75c5a64f6fcea971c4274dd0d4c2585745b01b2e8888a09f3b9?"
           className="shrink-0 w-6 aspect-square"
         />
-        <Link href="navigation">
+        <Link href={{pathname: "/navigation", query: {"isInCall": false}}}>
         <div className="flex-auto my-auto">Find Route</div>
         </Link>
       </div>
