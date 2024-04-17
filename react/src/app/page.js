@@ -61,12 +61,13 @@ export default function Page() {
             className="shrink-0 aspect-[0.95] w-[60px]"
           />
         </Link>
-
+        <Link href="profile">
         <img
           loading="lazy"
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/a774e0177463daa7b0936e36ccdd9291374814fdb316bedf400a74ecd0b8b6f6?"
           className="shrink-0 my-auto aspect-[1.02] w-[53px]"
         />
+        </Link>
       </div>
     </div>
   );
