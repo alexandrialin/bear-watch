@@ -74,7 +74,7 @@ export default function MyComponent() {
           type="text"
           name="safeword"
           placeholder="Enter safe word"
-          className="shrink-0 bg-white rounded-md border border-black border-solid h-[35px] w-[196px] px-2 text-black" // Added text-black for black text color
+          className="shrink-0 bg-white rounded-md border border-black border-solid h-[35px] w-[196px] px-2 text-black" 
         />
       </div>
 
@@ -97,11 +97,11 @@ export default function MyComponent() {
           Record Video
         </div>
         <div className="flex justify-center items-center">
-          <img
-            loading="lazy"
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/f3c10e63a5414910e49b975223dbe6b2cc516faa2ec1105be49f34c7840e037c?apiKey=308dd41c1b654e0d93a9458741b2ee85&"
-            className="w-14 aspect-[1.92]"
-          />
+        <label className="relative inline-block w-14 h-8">
+          <input type="checkbox" className="opacity-0 w-0 h-0 peer" />
+          <span className="absolute inset-0 bg-gray-300 rounded-full transition-colors duration-200 ease-in-out cursor-pointer before:absolute before:bottom-1 before:left-1 before:bg-white before:rounded-full before:h-6 before:w-6 before:transition-transform before:duration-200 before:ease-in-out peer-checked:bg-green-400 peer-checked:before:translate-x-6"></span>
+        </label>
+
         </div>
       </div>
       <div className="flex gap-5 px-5 py-3.5 mt-8 w-full rounded-xl bg-neutral-500 bg-opacity-30">
@@ -109,11 +109,12 @@ export default function MyComponent() {
           Record Audio
         </div>
         <div className="flex justify-center items-center">
-          <img
-            loading="lazy"
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/f3c10e63a5414910e49b975223dbe6b2cc516faa2ec1105be49f34c7840e037c?apiKey=308dd41c1b654e0d93a9458741b2ee85&"
-            className="w-14 aspect-[1.92]"
-          />
+        <label className="relative inline-block w-14 h-8">
+          <input type="checkbox" className="opacity-0 w-0 h-0 peer" />
+          <span className="absolute inset-0 bg-gray-300 rounded-full transition-colors duration-200 ease-in-out cursor-pointer before:absolute before:bottom-1 before:left-1 before:bg-white before:rounded-full before:h-6 before:w-6 before:transition-transform before:duration-200 before:ease-in-out peer-checked:bg-green-400 peer-checked:before:translate-x-6"></span>
+        </label>
+
+
         </div>
       </div>
       <div className="justify-center self-center px-7 py-4 mt-11 text-2l font-bold text-center text-black bg-amber-400 rounded-3xl">

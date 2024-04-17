@@ -27,11 +27,11 @@ export default function MyComponent() {
               Share Route
             </div>
             <div className="flex justify-center items-center">
-              <img
-                loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/d78a63125d9edb4778753bf328b084f3eed28da0681fe4c1e42ff5447feb7a7c?apiKey=308dd41c1b654e0d93a9458741b2ee85&"
-                className="aspect-[1.82] w-[53px]"
-              />
+            <label className="relative inline-block w-14 h-8">
+              <input type="checkbox" className="opacity-0 w-0 h-0 peer" />
+              <span className="absolute inset-0 bg-gray-300 rounded-full transition-colors duration-200 ease-in-out cursor-pointer before:absolute before:bottom-1 before:left-1 before:bg-white before:rounded-full before:h-6 before:w-6 before:transition-transform before:duration-200 before:ease-in-out peer-checked:bg-green-400 peer-checked:before:translate-x-6"></span>
+            </label>
+
             </div>
           </div>
       </div>
@@ -41,11 +41,11 @@ export default function MyComponent() {
               Share Health Info
             </div>
             <div className="flex justify-center items-center">
-              <img
-                loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/d78a63125d9edb4778753bf328b084f3eed28da0681fe4c1e42ff5447feb7a7c?apiKey=308dd41c1b654e0d93a9458741b2ee85&"
-                className="aspect-[1.82] w-[53px]"
-              />
+            <label className="relative inline-block w-14 h-8">
+              <input type="checkbox" className="opacity-0 w-0 h-0 peer" />
+              <span className="absolute inset-0 bg-gray-300 rounded-full transition-colors duration-200 ease-in-out cursor-pointer before:absolute before:bottom-1 before:left-1 before:bg-white before:rounded-full before:h-6 before:w-6 before:transition-transform before:duration-200 before:ease-in-out peer-checked:bg-green-400 peer-checked:before:translate-x-6"></span>
+            </label>
+
             </div>
           </div>
       </div>
@@ -55,11 +55,11 @@ export default function MyComponent() {
               Enable Camera Access
             </div>
             <div className="flex justify-center items-center">
-              <img
-                loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/d78a63125d9edb4778753bf328b084f3eed28da0681fe4c1e42ff5447feb7a7c?apiKey=308dd41c1b654e0d93a9458741b2ee85&"
-                className="aspect-[1.82] w-[53px]"
-              />
+            <label className="relative inline-block w-14 h-8">
+              <input type="checkbox" className="opacity-0 w-0 h-0 peer" />
+              <span className="absolute inset-0 bg-gray-300 rounded-full transition-colors duration-200 ease-in-out cursor-pointer before:absolute before:bottom-1 before:left-1 before:bg-white before:rounded-full before:h-6 before:w-6 before:transition-transform before:duration-200 before:ease-in-out peer-checked:bg-green-400 peer-checked:before:translate-x-6"></span>
+            </label>
+
             </div>
           </div>
       </div>
@@ -69,11 +69,11 @@ export default function MyComponent() {
               Enable Microphone Access
             </div>
             <div className="flex justify-center items-center">
-              <img
-                loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/d78a63125d9edb4778753bf328b084f3eed28da0681fe4c1e42ff5447feb7a7c?apiKey=308dd41c1b654e0d93a9458741b2ee85&"
-                className="aspect-[1.82] w-[53px]"
-              />
+            <label className="relative inline-block w-14 h-8">
+              <input type="checkbox" className="opacity-0 w-0 h-0 peer" />
+              <span className="absolute inset-0 bg-gray-300 rounded-full transition-colors duration-200 ease-in-out cursor-pointer before:absolute before:bottom-1 before:left-1 before:bg-white before:rounded-full before:h-6 before:w-6 before:transition-transform before:duration-200 before:ease-in-out peer-checked:bg-green-400 peer-checked:before:translate-x-6"></span>
+            </label>
+
             </div>
           </div>
       </div>
