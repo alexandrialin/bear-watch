@@ -1,5 +1,6 @@
 import * as React from "react";
 import './style.css';
+import Link from 'next/link';
 
 function Buddy() {
   return (
@@ -16,7 +17,9 @@ function Buddy() {
           <input placeholder = "End Location" class = "form-control end"/> 
         </div>
       <div class = 'submit'>
+        <Link href="partners">
         <button type="button" class="btn btn-warning btn-lg">Primary</button>
+        </Link>
       </div>
       </div>
     </main>
