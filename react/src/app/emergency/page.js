@@ -19,11 +19,49 @@ export default function Page() {
     setStatus(Status.IN_EMERGENCY);
   };
 
+  const sendMessage = async () => {
+    const url = `https://api.twilio.com/2010-04-01/Accounts/${process.env.NEXT_PUBLIC_TWILLIO_ACCOUNT}/Messages.json`;
+
+    const authHeader =
+      "Basic " +
+      btoa(
+        `${process.env.NEXT_PUBLIC_TWILLIO_ACCOUNT}:${process.env.NEXT_PUBLIC_TWILLIO_AUTH}`
+      );
+    const headers = {
+      Authorization: authHeader,
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+
+    const body = new URLSearchParams({
+      To: "+18777804236",
+      From: "+18447803609",
+      Body: "Your contact is in an emergency",
+    });
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: body,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send message: " + response.statusText);
+      }
+
+      const responseData = await response.json();
+      console.log("Message sent successfully:", responseData);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
   useEffect(() => {
     if (status != Status.IN_EMERGENCY) return;
 
     if (time == 0) {
       setStatus(Status.FINISHED);
+      sendMessage();
       return;
     }
 
