@@ -17,6 +17,7 @@ export default function Page() {
 
   useEffect(() => {
     setListening(true);
+    
   }, []);
 
   useEffect(() => {
@@ -26,8 +27,8 @@ export default function Page() {
           const finalTranscript = event.results[i][0].transcript;
           console.log("User said (final):", finalTranscript);
           setTranscript(finalTranscript);
-          setListening(false); // Stop listening when a final result is received
-          handleAIResponse(finalTranscript); // Send the transcript to AI
+          setListening(false); 
+          handleAIResponse(finalTranscript);
         }
       }
     };
@@ -36,7 +37,7 @@ export default function Page() {
     recognition.onend = () => {
       console.log("Recognition stopped.");
       if (!isSpeaking) {
-        setListening(true); // Automatically restart listening unless it's speaking
+        setListening(true); 
       }
     };
 
@@ -76,15 +77,23 @@ export default function Page() {
   const speak = (text) => {
     console.log("Speaking out:", text);
     const utterance = new SpeechSynthesisUtterance(text);
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find(voice => voice.name === "Aaron") || voices.find(voice => voice.lang.startsWith('en-'));
+    if (voice) {
+        utterance.voice = voice;
+    } else {
+        console.log("Preferred voice not found. Using default voice.");
+    }
     utterance.onend = () => {
-      console.log("Speech synthesis ended.");
-      setIsSpeaking(false); 
-      if (!listening) {
-        setListening(true);
-      }
+        console.log("Speech synthesis ended.");
+        setIsSpeaking(false);
+        if (!listening) {
+            setListening(true); 
+        }
     };
+
     window.speechSynthesis.speak(utterance);
-  };
+};
 
   return (
     <div className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto h-screen w-screen" style={{ backgroundColor: "#081F45" }}>
