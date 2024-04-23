@@ -9,6 +9,7 @@ export default function Page() {
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [seconds, setSeconds] = useState(0);
 
   const recognition = new SpeechRecognition();
   recognition.continuous = true;
@@ -19,6 +20,11 @@ export default function Page() {
     setListening(true);
     
   }, []);
+
+  useEffect(() => {
+    const intervalId = startTimer();
+    return () => clearInterval(intervalId);
+}, []);
 
   useEffect(() => {
     recognition.onresult = event => {
@@ -95,11 +101,23 @@ export default function Page() {
     window.speechSynthesis.speak(utterance);
 };
 
+const startTimer = () => {
+  return setInterval(() => {
+      setSeconds(prevSeconds => prevSeconds + 1);
+  }, 1000);
+};
+
+const formatTime = () => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+};
+
   return (
     <div className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto h-screen w-screen" style={{ backgroundColor: "#081F45" }}>
       <div className="my-20">
         <div className="text-white text-center text-5xl">Bob</div>
-        <div className="text-white text-center text-md">1:06</div>
+        <div className="text-white text-center text-md">{formatTime()}</div>
       </div>
       <div className="grid grid-cols-3 gap-10 p-4">
         <div className="flex flex-col items-center">
