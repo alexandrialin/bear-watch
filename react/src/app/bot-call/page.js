@@ -1,16 +1,93 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 export default function Page() {
-  const router = useRouter();
+  const [listening, setListening] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+
+  useEffect(() => {
+    setListening(true);
+  }, []);
+
+  useEffect(() => {
+    recognition.onresult = event => {
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          const finalTranscript = event.results[i][0].transcript;
+          console.log("User said (final):", finalTranscript);
+          setTranscript(finalTranscript);
+          setListening(false); // Stop listening when a final result is received
+          handleAIResponse(finalTranscript); // Send the transcript to AI
+        }
+      }
+    };
+
+    recognition.onstart = () => console.log("Recognition started.");
+    recognition.onend = () => {
+      console.log("Recognition stopped.");
+      if (!isSpeaking) {
+        setListening(true); // Automatically restart listening unless it's speaking
+      }
+    };
+
+    if (listening) {
+      recognition.start();
+    } else {
+      recognition.stop();
+    }
+
+    return () => recognition.abort();
+  }, [listening, isSpeaking]);
+
+  const handleAIResponse = async (text) => {
+    console.log("Sending to AI:", text);
+    try {
+      const response = await fetch('https://noggin.rea.gent/elegant-buzzard-8215', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer rg_v1_dmjggtj8ekjk979xxxf8oeb4tr5jzxfomp4z_ngk',
+        },
+        body: JSON.stringify({
+          "gender": "unknown",
+          "relation": "friend",
+          "chat": text,
+        }),
+      });
+      const responseData = await response.text();
+      console.log("Reagent responded:", responseData);
+      setIsSpeaking(true); 
+      speak(responseData);
+    } catch (error) {
+      console.error('Error calling Reagent API:', error);
+    }
+  };
+
+  const speak = (text) => {
+    console.log("Speaking out:", text);
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.onend = () => {
+      console.log("Speech synthesis ended.");
+      setIsSpeaking(false); 
+      if (!listening) {
+        setListening(true);
+      }
+    };
+    window.speechSynthesis.speak(utterance);
+  };
+
   return (
-    <div
-      className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto h-screen w-screen"
-      style={{ backgroundColor: "#081F45" }}
-    >
+    <div className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto h-screen w-screen" style={{ backgroundColor: "#081F45" }}>
       <div className="my-20">
         <div className="text-white text-center text-5xl">Bob</div>
         <div className="text-white text-center text-md">1:06</div>
@@ -22,35 +99,30 @@ export default function Page() {
           </button>
           <div className="text-center mt-2 text-amber-400">Directions</div>
         </div>
-
         <div className="flex flex-col items-center">
           <button className="h-16 w-16 rounded-full border-4 border-amber-400 bg-auto text-black flex items-center justify-center">
             <span className="text-amber-400 text-3xl text-center ">+</span>
           </button>
           <div className="text-center mt-2 text-amber-400">Keypad</div>
         </div>
-
         <div className="flex flex-col items-center">
           <button className="h-16 w-16 rounded-full border-4 border-amber-400 bg-auto text-black flex items-center justify-center">
             <span className="text-amber-400 text-3xl text-center ">+</span>
           </button>
           <div className="text-center mt-2 text-amber-400">Speaker</div>
         </div>
-
         <div className="flex flex-col items-center">
           <button className="h-16 w-16 rounded-full border-4 border-amber-400 bg-auto text-black flex items-center justify-center">
             <span className="text-amber-400 text-3xl text-center ">+</span>
           </button>
           <div className="text-center mt-2 text-amber-400">Add Call</div>
         </div>
-
         <div className="flex flex-col items-center">
           <button className="h-16 w-16 rounded-full border-4 border-amber-400 bg-auto text-black flex items-center justify-center">
             <span className="text-amber-400 text-3xl text-center ">+</span>
           </button>
           <div className="text-center mt-2 text-amber-400">Safe End Call</div>
         </div>
-
         <div className="flex flex-col items-center">
           <button className="h-16 w-16 rounded-full border-4 border-amber-400 bg-auto text-black flex items-center justify-center">
             <span className="text-amber-400 text-3xl text-center ">+</span>
@@ -80,6 +152,7 @@ export default function Page() {
           </div>
         </Link>
       </div>
+      <p className="text-white mt-4">{transcript}</p>
     </div>
   );
 }
