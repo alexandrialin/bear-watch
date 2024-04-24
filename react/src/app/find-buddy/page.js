@@ -43,7 +43,7 @@ function Buddy() {
         </div>
         <div className = "location-input">
         <LoadScript
-            googleMapsApiKey="AIzaSyCoXH96TuxpQTdykVjVcMJh4P5jYUXIzd8"
+            googleMapsApiKey ={process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}
             libraries={['places']}
           >
           <Autocomplete onLoad={(startAutocomplete) => handleStartAutocomplete(startAutocomplete)} onPlaceChanged={() => setStartLocation(startautocomplete.getPlace())}>
