@@ -1,25 +1,65 @@
+'use client'
 import * as React from "react";
 import './style.css';
-import Link from 'next/link';
+import Link from 'next/link';;
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Buddy() {
+  const [start, setStart] = React.useState('');
+  const [end, setEnd] = React.useState('');
+
+  const [startLat, setStartLat] = React.useState('');
+  const [startLon, setStartLon] = React.useState('');
+  const [endLat, setEndLat] = React.useState('');
+  const [endLon, setEndLon] = React.useState('');
+  
+  const updateStart = (event) => {
+    setStart(event.target.value);
+  }
+
+  const updateEnd = (event) => {
+    setEnd(event.target.value);
+  }
+
+
+  const submit = () => {
+    if (start == ''){
+      setStart('2422 Prospect Street');
+    }
+    if (end == ''){
+      setEnd('2422 Prospect Street');
+    }
+    const formatStart = start.split(' ').join('+');
+    const formatEnd = end.split(' ').join('+');
+    fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${formatStart}&filter=circle:-122.25948668293665,37.87023239260658,1000&bias=proximity:-122.25949134537427,37.8702670425171|countrycode:none&format=json&apiKey=2323759d923b481ea616dd78ba5baea9`)
+    .then(response => response.json())
+    .then(result => {
+      const startLat = result.results[0].lat;
+      const startLon = result.results[0].lon;
+      fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${formatEnd}&filter=circle:-122.25948668293665,37.87023239260658,1000&bias=proximity:-122.25949134537427,37.8702670425171|countrycode:none&format=json&apiKey=2323759d923b481ea616dd78ba5baea9`)
+      .then(response => response.json())
+      .then(result => {
+        const endLat = result.results[0].lat; 
+        const endLon = result.results[0].lon;
+        window.location.href = `/partners?startLat=${startLat}&startLon=${startLon}&endLat=${endLat}&endLon=${endLon}`;
+      });
+    });
+  };
+
   return (
     <main>
-      <head>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"></link>
-      </head>
-      <div class="background">
-        <div class = "back-btn">
+      <div className="background">
+        <div className = "back-btn">
           &lt; Back
         </div>
-        <div class = "location-input">
-          <input placeholder = "Start Location" class = "form-control start"/> 
-          <input placeholder = "End Location" class = "form-control end"/> 
+        <div className = "location-input">
+          <input placeholder = "Start Location" onChange={updateStart} className = "form-control start"/> 
+          <input placeholder = 'End Location' onChange={updateEnd} className = "form-control end"/> 
         </div>
-      <div class = 'submit'>
-        <Link href="partners">
-        <button type="button" class="btn btn-warning btn-lg">Primary</button>
-        </Link>
+      <div className = 'submit'>
+        {/* <Link href={url}> */}
+          <button type="button" onClick = {submit} className="btn btn-warning btn-lg">Submit</button>
+        {/* </Link> */}
       </div>
       </div>
     </main>
