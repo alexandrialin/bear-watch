@@ -23,12 +23,6 @@ function Buddy() {
 
 
   const submit = () => {
-    if (start == ''){
-      setStart('2422 Prospect Street');
-    }
-    if (end == ''){
-      setEnd('2422 Prospect Street');
-    }
     const formatStart = start.split(' ').join('+');
     const formatEnd = end.split(' ').join('+');
     fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${formatStart}&filter=circle:-122.25948668293665,37.87023239260658,1000&bias=proximity:-122.25949134537427,37.8702670425171|countrycode:none&format=json&apiKey=2323759d923b481ea616dd78ba5baea9`)

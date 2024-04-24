@@ -1,7 +1,22 @@
-import * as React from "react";
+"use client";
+
+import React, { useState, useEffect } from 'react';
 import Link from "next/link";
 
 export default function Page() {
+  useEffect(() => {
+    const loadVoices = () => {
+      window.speechSynthesis.getVoices();
+    };
+
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+    loadVoices();
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }, []);
   return (
     <div
       className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto w-full bg-sky-950 max-w-[480px]"
