@@ -19,6 +19,7 @@ export default function MyComponent() {
     alert("Settings Saved!")
 
   };
+  
 
   return (
     <div style={{ backgroundColor: '#081F45' }} className="flex flex-col justify-center mx-auto w-full max-w-[480px]">

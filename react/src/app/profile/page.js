@@ -1,7 +1,27 @@
+'use client'
 import * as React from "react";
 import Link from 'next/link';
 
 export default function MyComponent() {
+  const [name, setName] = React.useState(localStorage.getItem('name') || '');
+  const [height, setHeight] = React.useState(localStorage.getItem('height') || '');
+  const [identity, setIdentity] = React.useState(localStorage.getItem('identity') || '');
+  const [diet, setDiet] = React.useState(localStorage.getItem('diet') || '');
+  const [language, setLanguage] = React.useState(localStorage.getItem('language') || '');
+  const [health, setHealth] = React.useState(localStorage.getItem('health') || '');
+
+
+  const saveSettings = () => {
+    localStorage.setItem('name', name);
+    localStorage.setItem('height', height);
+    localStorage.setItem('identity', identity);
+    localStorage.setItem('diet', diet);
+    localStorage.setItem('language', language);
+    alert("Settings Saved!")
+
+
+  };
+
   
   return (
     <div
@@ -36,6 +56,8 @@ export default function MyComponent() {
             <input
               type="text"
               name="name"
+              value={name}
+              onChange={e => setName(e.target.value)}
               className="w-[196px] px-2 text-white bg-transparent border-none focus:outline-none focus:border focus:border-black"
             />
           </div>
@@ -44,6 +66,8 @@ export default function MyComponent() {
             <input
               type="text"
               name="height"
+              value={height}
+              onChange={e => setHeight(e.target.value)}
               className="w-[196px] px-2 text-white bg-transparent border-none focus:outline-none focus:border focus:border-black"
             />
           </div>
@@ -52,6 +76,8 @@ export default function MyComponent() {
             <input
               type="text"
               name="identity"
+              value={identity}
+              onChange={e => setIdentity(e.target.value)}
               className="w-[196px] px-2 text-white bg-transparent border-none focus:outline-none focus:border focus:border-black"
             />
           </div>
@@ -64,7 +90,9 @@ export default function MyComponent() {
         <div className="w-full text-xs">Allergies and Dietary Restrictions</div>
         <input
               type="text"
-              name="allergy"
+              name="diet"
+              value={diet}
+              onChange={e => setDiet(e.target.value)}
               className="w-[196px] px-2 text-white bg-transparent border-none focus:outline-none focus:border focus:border-black"
             />
         <div className="w-full bg-white border border-white border-solid min-h-[2px]" />
@@ -74,6 +102,8 @@ export default function MyComponent() {
         <input
               type="text"
               name="language"
+              value={language}
+              onChange={e => setLanguage(e.target.value)}
               className="w-[196px] px-2 text-white bg-transparent border-none focus:outline-none focus:border focus:border-black"
             />
         <div className="w-full bg-white border border-white border-solid min-h-[2px]" />
@@ -83,6 +113,8 @@ export default function MyComponent() {
         <input
               type="text"
               name="health-issue"
+              value={health}
+              onChange={e => setHealth(e.target.value)}
               className="w-[196px] px-2 text-white bg-transparent border-none focus:outline-none focus:border focus:border-black"
             />
         <div className="shrink-0 h-0.5 bg-white border border-white border-solid" />
@@ -106,7 +138,7 @@ export default function MyComponent() {
           className="shrink-0 aspect-[1.19] fill-amber-400 w-[19px]"
         />
       </div>
-      <div className="justify-center py-4 mt-4 w-full text-xs text-white bg-zinc-100 bg-opacity-10">
+      {/* <div className="justify-center py-4 mt-4 w-full text-xs text-white bg-zinc-100 bg-opacity-10">
         Bob Smith
         <br />
         (123)-456-7890
@@ -114,9 +146,12 @@ export default function MyComponent() {
         23 Main St. Berkeley CA
         <br />
         Brother
-      </div>
+      </div> */}
+      <button onClick={saveSettings} className="justify-center self-center px-7 py-4 mt-11 text-2xl font-bold text-center text-black bg-amber-400 rounded-3xl">
+            Save Settings
+      </button>
     </div>
-        
+    
 
       </div>
     </div>
