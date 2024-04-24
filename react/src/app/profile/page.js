@@ -16,7 +16,7 @@ export default function MyComponent() {
               </p>
             </div>
             <div className="flex-auto mx-auto mt-px text-2xl font-semibold text-center text-amber-400">
-              Privacy
+              Profile
             </div>
           </div>
         </div>

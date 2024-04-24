@@ -26,11 +26,13 @@ export default function Page() {
     
     if(localStorage.getItem("ringtone") == "seaside")
     {
+      console.log("playing seaside");
       const audio = new Audio('/seaside.mp3');
       audio.play();
     }
     else if(localStorage.getItem("ringtone") == "radar")
     {
+      console.log("playing radar");
       const audio = new Audio('/radar.mp3');
       audio.play();
     }
@@ -111,12 +113,17 @@ export default function Page() {
     console.log("Speaking out:", text);
     const utterance = new SpeechSynthesisUtterance(text);
     const voices = window.speechSynthesis.getVoices();
-    const voice = voices.find(voice => voice.name === "Aaron") || voices.find(voice => voice.lang.startsWith('en-'));
-    if (voice) {
-        utterance.voice = voice;
-    } else {
-        console.log("Preferred voice not found. Using default voice.");
+    if(localStorage.getItem('gender') == "male"){
+
+      const voice = voices.find(voice => voice.name === "Aaron") || voices.find(voice => voice.lang.startsWith('en-'));
+      if (voice) {
+          utterance.voice = voice;
+      } else {
+          console.log("Preferred voice not found. Using default voice.");
+      }
+
     }
+    
     utterance.onend = () => {
         console.log("Speech synthesis ended.");
         setIsSpeaking(false);
