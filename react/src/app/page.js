@@ -19,7 +19,7 @@ export default function Page() {
   }, []);
   return (
     <div
-      className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto w-full bg-sky-950 max-w-[480px]"
+      className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto w-full bg-sky-950 max-w-[480px] mx-auto h-screen w-screen"
       style={{ backgroundColor: "#081F45" }}
     >
       <img
@@ -32,7 +32,7 @@ export default function Page() {
           maxHeight: "100%",
         }}
       />
-      <div className="flex gap-5 items-start px-8 pt-3 pb-5 mt-68 max-w-full text-base font-semibold text-center bg-amber-400 rounded-xl text-sky-950 w-[225px]">
+      <div className="flex gap-5 items-start px-8 pt-3 pb-5 mt-68 max-w-full text-base font-semibold text-center bg-amber-400 rounded-xl text-sky-950 w-[225px] ">
         <img
           loading="lazy"
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/4854920f43cabd037b09cfdb7e7b35d945ca5881f81c0356dcd0603c987da073?"
