@@ -10,7 +10,7 @@ export default function Page() {
   const [transcript, setTranscript] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [seconds, setSeconds] = useState(0);
-
+  const [conversation, setConversation] = useState(''); 
   const recognition = new SpeechRecognition();
   recognition.continuous = true;
   recognition.interimResults = true;
@@ -19,7 +19,23 @@ export default function Page() {
   useEffect(() => {
     setListening(true);
     
+    
   }, []);
+
+  useEffect(() => {
+    
+    if(localStorage.getItem("ringtone") == "seaside")
+    {
+      const audio = new Audio('/seaside.mp3');
+      audio.play();
+    }
+    else if(localStorage.getItem("ringtone") == "radar")
+    {
+      const audio = new Audio('/radar.mp3');
+      audio.play();
+    }
+    
+  }, []); 
 
   useEffect(() => {
     const intervalId = startTimer();
@@ -32,8 +48,9 @@ export default function Page() {
         if (event.results[i].isFinal) {
           const finalTranscript = event.results[i][0].transcript;
           console.log("User said (final):", finalTranscript);
+          updateConversation(finalTranscript);
           setTranscript(finalTranscript);
-          setListening(false); 
+          setListening(false);
           handleAIResponse(finalTranscript);
         }
       }
@@ -66,18 +83,28 @@ export default function Page() {
           Authorization: 'Bearer rg_v1_dmjggtj8ekjk979xxxf8oeb4tr5jzxfomp4z_ngk',
         },
         body: JSON.stringify({
-          "gender": "unknown",
-          "relation": "friend",
+          "gender": localStorage.getItem('gender'),
+          "relation": localStorage.getItem('relation'),
           "chat": text,
+          "name": "Bob",
+          "history": conversation
         }),
       });
       const responseData = await response.text();
+      console.log(localStorage.getItem('gender'));
+      console.log(localStorage.getItem('relation'));
+      console.log(localStorage.getItem('ringtone'));
       console.log("Reagent responded:", responseData);
+      updateConversation(responseData); 
       setIsSpeaking(true); 
       speak(responseData);
     } catch (error) {
       console.error('Error calling Reagent API:', error);
     }
+  };
+
+  const updateConversation = (message) => {
+    setConversation(prev => `${prev} \n${message}`);
   };
 
   const speak = (text) => {
