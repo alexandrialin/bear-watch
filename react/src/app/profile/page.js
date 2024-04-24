@@ -2,8 +2,12 @@ import * as React from "react";
 import Link from 'next/link';
 
 export default function MyComponent() {
+  
   return (
-    <div style={{ backgroundColor: '#081F45' }} className="flex flex-col justify-center mx-auto w-full max-w-[480px]">
+    <div
+      className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto w-full bg-sky-950 max-w-[480px] mx-auto h-screen w-screen"
+      style={{ backgroundColor: "#081F45" }}
+    >
       <div className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto w-full bg-sky-950 max-w-[480px]"
       style={{ backgroundColor: '#081F45' }}>
         <div className="flex flex-row">

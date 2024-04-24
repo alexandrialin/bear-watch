@@ -1,44 +1,39 @@
 'use client'
 import * as React from "react";
 import './style.css';
-import Link from 'next/link';;
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {LoadScript, Autocomplete } from '@react-google-maps/api';
 
 function Buddy() {
-  const [start, setStart] = React.useState('');
-  const [end, setEnd] = React.useState('');
 
-  const [startLat, setStartLat] = React.useState('');
-  const [startLon, setStartLon] = React.useState('');
-  const [endLat, setEndLat] = React.useState('');
-  const [endLon, setEndLon] = React.useState('');
-  
-  const updateStart = (event) => {
-    setStart(event.target.value);
+  const [startPlace, setStartPlace] = React.useState(null);
+  const [startautocomplete, setStartAutocomplete] = React.useState(null);
+  const [endautocomplete, setEndAutocomplete] = React.useState(null);
+  const [endPlace, setEndPlace] = React.useState(null);
+
+  const handleStartAutocomplete = (autocomplete) => {
+    setStartAutocomplete(autocomplete); // Set autocomplete when it's loaded
+  };
+
+  const handleEndAutocomplete = (autocomplete) => {
+    setEndAutocomplete(autocomplete); // Set autocomplete when it's loaded
+  };
+
+  const setStartLocation = (place) => {
+    setStartPlace(place);
   }
 
-  const updateEnd = (event) => {
-    setEnd(event.target.value);
+  const setEndLocation = (place) => {
+    setEndPlace(place);
   }
-
 
   const submit = () => {
-    const formatStart = start.split(' ').join('+');
-    const formatEnd = end.split(' ').join('+');
-    fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${formatStart}&filter=circle:-122.25948668293665,37.87023239260658,1000&bias=proximity:-122.25949134537427,37.8702670425171|countrycode:none&format=json&apiKey=2323759d923b481ea616dd78ba5baea9`)
-    .then(response => response.json())
-    .then(result => {
-      const startLat = result.results[0].lat;
-      const startLon = result.results[0].lon;
-      fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${formatEnd}&filter=circle:-122.25948668293665,37.87023239260658,1000&bias=proximity:-122.25949134537427,37.8702670425171|countrycode:none&format=json&apiKey=2323759d923b481ea616dd78ba5baea9`)
-      .then(response => response.json())
-      .then(result => {
-        const endLat = result.results[0].lat; 
-        const endLon = result.results[0].lon;
-        window.location.href = `/partners?startLat=${startLat}&startLon=${startLon}&endLat=${endLat}&endLon=${endLon}`;
-      });
-    });
-  };
+    localStorage.setItem('startLat', startPlace.geometry.location.lat());
+    localStorage.setItem('startLon', startPlace.geometry.location.lng());
+    localStorage.setItem('endLat', endPlace.geometry.location.lat());
+    localStorage.setItem('endLon', endPlace.geometry.location.lng());
+    window.location.href = '/partners';
+  }
 
   return (
     <main>
@@ -47,13 +42,20 @@ function Buddy() {
           &lt; Back
         </div>
         <div className = "location-input">
-          <input placeholder = "Start Location" onChange={updateStart} className = "form-control start"/> 
-          <input placeholder = 'End Location' onChange={updateEnd} className = "form-control end"/> 
+        <LoadScript
+            googleMapsApiKey ={process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}
+            libraries={['places']}
+          >
+          <Autocomplete onLoad={(startAutocomplete) => handleStartAutocomplete(startAutocomplete)} onPlaceChanged={() => setStartLocation(startautocomplete.getPlace())}>
+            <input type="text" placeholder="Start Location" className = "form-control start"/>
+          </Autocomplete>
+          <Autocomplete onLoad={(autocomplete) => handleEndAutocomplete(autocomplete)} onPlaceChanged={() => setEndLocation(endautocomplete.getPlace())}>
+            <input type="text" placeholder="End Location" className = "form-control end"/>
+          </Autocomplete>
+          </LoadScript>
         </div>
       <div className = 'submit'>
-        {/* <Link href={url}> */}
-          <button type="button" onClick = {submit} className="btn btn-warning btn-lg">Submit</button>
-        {/* </Link> */}
+        <button type="button" onClick = {submit} className="btn btn-warning btn-lg">Submit</button>
       </div>
       </div>
     </main>

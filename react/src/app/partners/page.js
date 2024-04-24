@@ -7,17 +7,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Partners(){
 
-    const [queryParam, setQueryParam] = React.useState(null);
 
-    React.useEffect(() => {
-        const queryParams = new URLSearchParams(window.location.search);
-        const paramValue = queryParams.get('startLat');
-        setQueryParam(paramValue);
-      }, []);
-
-    console.log(queryParam);
+    const startLat = localStorage.getItem('startLat');
+    const startLon = localStorage.getItem('startLon');
+    const endLat = localStorage.getItem('startLat');
+    const endLon = localStorage.getItem('endLon');
     const [page, setPage] = React.useState("walk");
-    const [userList, setUserList] = React.useState([]);
+
+    // const [userList, setUserList] = React.useState([]);
 
     const walkHit = () => {
         setPage("walk");

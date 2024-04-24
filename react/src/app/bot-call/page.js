@@ -15,6 +15,7 @@ export default function Page() {
   recognition.continuous = true;
   recognition.interimResults = true;
   recognition.lang = 'en-US';
+  const router = useRouter();
 
   useEffect(() => {
     setListening(true);
@@ -50,6 +51,11 @@ export default function Page() {
         if (event.results[i].isFinal) {
           const finalTranscript = event.results[i][0].transcript;
           console.log("User said (final):", finalTranscript);
+          if(finalTranscript.includes(localStorage.getItem('safeWord')))
+          {
+            console.log("emergency");
+            router.push('emergency');
+          }
           updateConversation(finalTranscript);
           setTranscript(finalTranscript);
           setListening(false);
@@ -93,6 +99,7 @@ export default function Page() {
         }),
       });
       const responseData = await response.text();
+      console.log(localStorage.getItem('botName'));
       console.log(localStorage.getItem('gender'));
       console.log(localStorage.getItem('relation'));
       console.log(localStorage.getItem('ringtone'));
@@ -150,7 +157,7 @@ const formatTime = () => {
   return (
     <div className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto h-screen w-screen" style={{ backgroundColor: "#081F45" }}>
       <div className="my-20">
-        <div className="text-white text-center text-5xl">Bob</div>
+        <div className="text-white text-center text-5xl">{localStorage.getItem('botName')}</div>
         <div className="text-white text-center text-md">{formatTime()}</div>
       </div>
       <div className="grid grid-cols-3 gap-10 p-4">
@@ -178,12 +185,14 @@ const formatTime = () => {
           </button>
           <div className="text-center mt-2 text-amber-400">Add Call</div>
         </div>
+        <Link href="/">
         <div className="flex flex-col items-center">
           <button className="h-16 w-16 rounded-full border-4 border-amber-400 bg-auto text-black flex items-center justify-center">
             <span className="text-amber-400 text-3xl text-center ">+</span>
           </button>
           <div className="text-center mt-2 text-amber-400">Safe End Call</div>
         </div>
+        </Link>
         <div className="flex flex-col items-center">
           <button className="h-16 w-16 rounded-full border-4 border-amber-400 bg-auto text-black flex items-center justify-center">
             <span className="text-amber-400 text-3xl text-center ">+</span>
