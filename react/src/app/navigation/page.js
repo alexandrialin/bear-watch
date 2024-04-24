@@ -1,6 +1,6 @@
 "use client";
 "use strict";
-import * as React from "react";
+import React, { useEffect } from "react";
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
