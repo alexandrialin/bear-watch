@@ -94,7 +94,8 @@ export default function Page() {
           "gender": localStorage.getItem('gender'),
           "relation": localStorage.getItem('relation'),
           "chat": text,
-          "name": "Bob",
+          "name": localStorage.getItem('name'),
+          "botName": localStorage.getItem('botName'),
           "history": conversation
         }),
       });
