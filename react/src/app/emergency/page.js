@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 // generate an enum for status
@@ -9,14 +9,86 @@ const Status = Object.freeze({
   IN_EMERGENCY: "in_emergency",
   FINISHED: "finished",
 });
+const mimeType = "video/webm";
 
+// Video code inspired from https://blog.logrocket.com/how-to-create-video-audio-recorder-react/#mediarecorder-api
 export default function Page() {
   const [status, setStatus] = useState(Status.CONFIRMATION);
   const [time, setTime] = useState(6);
+  const [permission, setPermission] = useState(false);
+  const mediaRecorder = useRef(null);
+  const liveVideoFeed = useRef(null);
+  const [recordingStatus, setRecordingStatus] = useState("inactive");
+  const [stream, setStream] = useState(null);
+  const [videoChunks, setVideoChunks] = useState([]);
+  const [recordedVideo, setRecordedVideo] = useState(null);
   const router = useRouter();
 
   const startEmergency = () => {
     setStatus(Status.IN_EMERGENCY);
+  };
+
+  useEffect(() => {
+    getCameraPermission();
+  }, []);
+
+  const getCameraPermission = async () => {
+    setRecordedVideo(null);
+    if ("MediaRecorder" in window) {
+      try {
+        const videoConstraints = {
+          audio: false,
+          video: true,
+        };
+        const audioConstraints = { audio: true };
+        // create audio and video streams separately
+        const audioStream = await navigator.mediaDevices.getUserMedia(
+          audioConstraints
+        );
+        const videoStream = await navigator.mediaDevices.getUserMedia(
+          videoConstraints
+        );
+        setPermission(true);
+        //combine both audio and video streams
+        const combinedStream = new MediaStream([
+          ...videoStream.getVideoTracks(),
+          ...audioStream.getAudioTracks(),
+        ]);
+        setStream(combinedStream);
+        //set videostream to live feed player
+        liveVideoFeed.current.srcObject = videoStream;
+      } catch (err) {
+        alert(err.message);
+      }
+    } else {
+      alert("The MediaRecorder API is not supported in your browser.");
+    }
+  };
+
+  const startRecording = async () => {
+    setRecordingStatus("recording");
+    const media = new MediaRecorder(stream, { mimeType });
+    mediaRecorder.current = media;
+    mediaRecorder.current.start();
+    let localVideoChunks = [];
+    mediaRecorder.current.ondataavailable = (event) => {
+      if (typeof event.data === "undefined") return;
+      if (event.data.size === 0) return;
+      localVideoChunks.push(event.data);
+    };
+    setVideoChunks(localVideoChunks);
+  };
+
+  const stopRecording = () => {
+    setPermission(false);
+    setRecordingStatus("inactive");
+    mediaRecorder.current.stop();
+    mediaRecorder.current.onstop = () => {
+      const videoBlob = new Blob(videoChunks, { type: mimeType });
+      const videoUrl = URL.createObjectURL(videoBlob);
+      setRecordedVideo(videoUrl);
+      setVideoChunks([]);
+    };
   };
 
   const sendMessage = async () => {
@@ -61,7 +133,8 @@ export default function Page() {
 
     if (time == 0) {
       setStatus(Status.FINISHED);
-      sendMessage();
+      // sendMessage();
+      startRecording();
       return;
     }
 
@@ -122,6 +195,14 @@ export default function Page() {
       >
         <div className="text-white text-center text-2xl my-24 mx-10">
           Emergency Contacts Alerted
+        </div>
+
+        <div class="left">
+          <div id="startButton" class="button">
+            Start Recording
+          </div>
+          <h2>Preview</h2>
+          <video id="preview" width="160" height="120" autoplay muted></video>
         </div>
       </div>
     );
