@@ -1,11 +1,32 @@
+'use client'
 import * as React from "react";
 import Link from 'next/link';
 
 export default function MyComponent() {
+
+  const [botName, setBotName] = React.useState(localStorage.getItem('botName') || '');
+  const [gender, setGender] = React.useState(localStorage.getItem('gender') || '');
+  const [relation, setRelation] = React.useState(localStorage.getItem('relation') || '');
+  const [safeWord, setSafeWord] = React.useState(localStorage.getItem('safeWord') || '');
+  const [ringtone, setRingtone] = React.useState(localStorage.getItem('ringtone') || '');
+
+  const saveSettings = () => {
+    localStorage.setItem('botName', botName);
+    localStorage.setItem('gender', gender);
+    localStorage.setItem('relation', relation);
+    localStorage.setItem('safeWord', safeWord);
+    localStorage.setItem('ringtone', ringtone);
+    alert("Settings Saved!")
+
+  };
+  
+
   return (
     <div style={{ backgroundColor: '#081F45' }} className="flex flex-col justify-center mx-auto w-full max-w-[480px]">
-      <div className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto w-full bg-sky-950 max-w-[480px]"
-      style={{ backgroundColor: '#081F45' }}>
+      <div
+      className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto w-full bg-sky-950 max-w-[480px] mx-auto h-screen w-screen"
+      style={{ backgroundColor: "#081F45" }}
+    >
         <div className="flex flex-row">
           <div className="flex flex-row mr-36">
             <div className="box-border relative shrink-0 my-auto mr-16 ml-10 h-auto text-left max-sm:mr-14 max-sm:text-xl">
@@ -16,12 +37,23 @@ export default function MyComponent() {
               </p>
             </div>
             <div className="flex-auto mx-auto mt-px text-2xl font-semibold text-center text-amber-400">
-              Privacy
+              Setup
             </div>
           </div>
         </div>
         {/* end of header */}
         <div className="flex flex-col max-w-[337px]">
+        <div className="flex gap-5 justify-between px-5 mt-12 text-xl w-30 text-center text-white">
+        <div className="my-auto whitespace-nowrap">Name</div>
+        <input
+          type="text"
+          name="botName"
+          value={botName}
+          placeholder="Enter name"
+          className="shrink-0 bg-white rounded-md border border-black border-solid h-[35px] w-[196px] px-2 text-black" 
+          onChange={e => setBotName(e.target.value)}
+        />
+      </div>
       <div className="flex flex-col px-8 w-full">
         <div className="flex gap-5 mt-10 justify-between items-start w-full">
           <div className="mt-3.5 text-xl text-center text-white">Voice</div>
@@ -30,10 +62,12 @@ export default function MyComponent() {
           <input
             type="radio"
             name="genderOption" 
-            id="feminineOption" 
+            id="masculineOption" 
+            checked={gender === 'male'}
             className="text-white focus:ring-white h-6 w-6"
+            onChange={() => setGender('male')}
           />
-          <label htmlFor="feminineOption" className="ml-2 text-xl text-center text-white">
+          <label htmlFor="masculineOption" className="ml-2 text-xl text-center text-white">
             Masculine
           </label>
         </div>
@@ -46,7 +80,9 @@ export default function MyComponent() {
             type="radio"
             name="genderOption" 
             id="feminineOption" 
+            checked={gender === 'female'}
             className="text-white focus:ring-white h-6 w-6"
+            onChange={() => setGender('female')}
           />
           <label htmlFor="feminineOption" className="ml-2 text-xl text-center text-white">
             Feminine
@@ -60,7 +96,9 @@ export default function MyComponent() {
         <div className="flex justify-end items-center">
           <select
             name="relation"
+            value={relation}
             className="px-4 py-2 text-xl bg-white w-60 rounded-md border border-black"
+            onChange={e => setRelation(e.target.value)}
           >
             <option value="family">Family</option>
             <option value="friend">Friend</option>
@@ -73,8 +111,10 @@ export default function MyComponent() {
         <input
           type="text"
           name="safeword"
+          value={safeWord}
           placeholder="Enter safe word"
           className="shrink-0 bg-white rounded-md border border-black border-solid h-[35px] w-[196px] px-2 text-black" 
+          onChange={e => setSafeWord(e.target.value)}
         />
       </div>
 
@@ -84,7 +124,9 @@ export default function MyComponent() {
         <div className="flex justify-end items-center">
           <select
             name="ringtone"
+            value={ringtone}
             className="px-4 py-2 text-xl w-60 bg-white rounded-md border border-black"
+            onChange={e => setRingtone(e.target.value)}
           >
             <option value="radar">Radar</option>
             <option value="seaside">By The Seaside</option>
@@ -117,9 +159,9 @@ export default function MyComponent() {
 
         </div>
       </div>
-      <div className="justify-center self-center px-7 py-4 mt-11 text-2l font-bold text-center text-black bg-amber-400 rounded-3xl">
-        Quick Start Call
-      </div>
+      <button onClick={saveSettings} className="justify-center self-center px-7 py-4 mt-11 text-2xl font-bold text-center text-black bg-amber-400 rounded-3xl">
+            Save Settings
+      </button>
     </div>
         
 

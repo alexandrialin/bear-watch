@@ -1,22 +1,61 @@
+'use client'
 import * as React from "react";
 import './style.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {LoadScript, Autocomplete } from '@react-google-maps/api';
 
 function Buddy() {
+
+  const [startPlace, setStartPlace] = React.useState(null);
+  const [startautocomplete, setStartAutocomplete] = React.useState(null);
+  const [endautocomplete, setEndAutocomplete] = React.useState(null);
+  const [endPlace, setEndPlace] = React.useState(null);
+
+  const handleStartAutocomplete = (autocomplete) => {
+    setStartAutocomplete(autocomplete); // Set autocomplete when it's loaded
+  };
+
+  const handleEndAutocomplete = (autocomplete) => {
+    setEndAutocomplete(autocomplete); // Set autocomplete when it's loaded
+  };
+
+  const setStartLocation = (place) => {
+    setStartPlace(place);
+  }
+
+  const setEndLocation = (place) => {
+    setEndPlace(place);
+  }
+
+  const submit = () => {
+    localStorage.setItem('startLat', startPlace.geometry.location.lat());
+    localStorage.setItem('startLon', startPlace.geometry.location.lng());
+    localStorage.setItem('endLat', endPlace.geometry.location.lat());
+    localStorage.setItem('endLon', endPlace.geometry.location.lng());
+    window.location.href = '/partners';
+  }
+
   return (
     <main>
-      <head>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"></link>
-      </head>
-      <div class="background">
-        <div class = "back-btn">
+      <div className="background">
+        <div className = "back-btn">
           &lt; Back
         </div>
-        <div class = "location-input">
-          <input placeholder = "Start Location" class = "form-control start"/> 
-          <input placeholder = "End Location" class = "form-control end"/> 
+        <div className = "location-input">
+        <LoadScript
+            googleMapsApiKey ={process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}
+            libraries={['places']}
+          >
+          <Autocomplete onLoad={(startAutocomplete) => handleStartAutocomplete(startAutocomplete)} onPlaceChanged={() => setStartLocation(startautocomplete.getPlace())}>
+            <input type="text" placeholder="Start Location" className = "form-control start"/>
+          </Autocomplete>
+          <Autocomplete onLoad={(autocomplete) => handleEndAutocomplete(autocomplete)} onPlaceChanged={() => setEndLocation(endautocomplete.getPlace())}>
+            <input type="text" placeholder="End Location" className = "form-control end"/>
+          </Autocomplete>
+          </LoadScript>
         </div>
-      <div class = 'submit'>
-        <button type="button" class="btn btn-warning btn-lg">Primary</button>
+      <div className = 'submit'>
+        <button type="button" onClick = {submit} className="btn btn-warning btn-lg">Submit</button>
       </div>
       </div>
     </main>

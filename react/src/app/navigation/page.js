@@ -1,38 +1,133 @@
 "use client";
-import * as React from "react";
-//import browserEnv from 'browser-env';
+"use strict";
+import React, { useEffect } from "react";
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
 
-export default function Navigation(data) {
+ export default function Navigation(data) {
   const router = useRouter();
   
     var directions = null;
     var emergency = null;
     var report = null;
 
+    // in call bar at the top
     var callBar = null;
-
     if (data.searchParams["isInCall"] == "true") {
-       callBar = <div style=
+       callBar = <div className = "call-bar" style=
        {{width: "100%", height: "20px", backgroundColor: "#2AFC7E", textAlign: "center", justifyContent:"center", display:"flex", alignItems: "center"}}>
-            <Link href="bot-call" style={{fontSize:"10px", color: "#FFF"}}>In Call</Link>
+            <Link href="bot-call"style={{fontSize:"10px", color: "#FFF"}}>In Call</Link>
        </div>; 
     }
 
-    // //save for backend bruh
-    // var map = null;
-    // browserEnv(['navigator']);
-    // console.log(navigator);
-    // if ("geolocation" in nagivator) {
-    // const watchID = navigator.geolocation.watchPosition((position) => { 
-    //      //leaflet map api
-    //     let lat = position.coords.latitude;
-    //     let long = position.coords.longitude;
-    //     map = L.map('map').setView([lat,long], 13);
-    // });
-    // } 
+    //get location
+    var lat;
+    var long;
+    useEffect(() => {
+    if ('geolocation' in navigator) {
+    const watchID = navigator.geolocation.watchPosition((position) => { 
+        lat = position.coords.latitude;
+        long = position.coords.longitude;
+        console.log(position);
+    });
+    }
+  });
+
+  console.log(lat);
+//taken from gcp code
+const CONFIGURATION = {
+"ctaTitle": "Checkout",
+"mapOptions": {"center":{"lat":lat,"lng":long},"fullscreenControl":false,"mapTypeControl":false,"streetViewControl":false,"zoom":11,"zoomControl":true,"maxZoom":22,"mapId":""},
+"mapsApiKey": process.env.NEXT_PUBLIC_API_GOOGLE_MAPS,
+"capabilities": {"addressAutocompleteControl":true,"mapDisplayControl":true,"ctaControl":false}
+};
+
+const SHORT_NAME_ADDRESS_COMPONENT_TYPES =
+  new Set(['street_number', 'administrative_area_level_1', 'postal_code']);
+
+const ADDRESS_COMPONENT_TYPES_IN_FORM = [
+'location',
+];
+
+function getFormInputElement(componentType) {
+return document.getElementById(`${componentType}-input`);
+}
+
+function fillInAddress(place) {
+function getComponentName(componentType) {
+  for (const component of place.address_components || []) {
+    if (component.types[0] === componentType) {
+      return SHORT_NAME_ADDRESS_COMPONENT_TYPES.has(componentType) ?
+          component.short_name :
+          component.long_name;
+    }
+  }
+  return '';
+}
+
+function getComponentText(componentType) {
+  return (componentType === 'location') ?
+      `${getComponentName('street_number')} ${getComponentName('route')}` :
+      getComponentName(componentType);
+}
+
+for (const componentType of ADDRESS_COMPONENT_TYPES_IN_FORM) {
+  getFormInputElement(componentType).value = getComponentText(componentType);
+}
+}
+
+function renderAddress(place, map, marker) {
+if (place.geometry && place.geometry.location) {
+  map.setCenter(place.geometry.location);
+  marker.position = place.geometry.location;
+} else {
+  marker.position = null;
+}
+}
+
+useEffect(() => {async function initMap() {
+const {Map} = google.maps;
+const {AdvancedMarkerElement} = google.maps.marker;
+const {Autocomplete} = google.maps.places;
+
+const mapOptions = CONFIGURATION.mapOptions;
+mapOptions.mapId = mapOptions.mapId || 'DEMO_MAP_ID';
+mapOptions.center = mapOptions.center || {lat: parseFloat(lat), lng: parseFloat(long)};
+const map = new Map(document.getElementById('gmp-map'), mapOptions);
+const marker = new AdvancedMarkerElement({map});
+const autocomplete = new Autocomplete(getFormInputElement('location'), {
+  fields: ['address_components', 'geometry', 'name'],
+  types: ['address'],
+});
+
+var place; 
+autocomplete.addListener('place_changed', () => {
+  place = autocomplete.getPlace();
+  if (!place.geometry) {
+    // User entered the name of a Place that was not suggested and
+    // pressed the Enter key, or the Place Details request failed.
+    window.alert(`No details available for input: '${place.name}'`);
+    return;
+  }
+  renderAddress(place, map, marker);
+  fillInAddress(place);
+ // getRoutes(place);
+});
+}
+initMap();
+});
+
+const src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}&libraries=places,marker&solution_channel=GMP_QB_addressselection_v2_cAB`;
+
+const map =  <div className="card-container" style={{width:"100%", height: "100%"}}>
+<div className="panel">
+  <input type="text" className="relative justify-center mt-5 mb-5 text-center rounded-lg bg-neutral-200" style={{width: "100%"}} placeholder="To: Home" id="location-input"/>
+  <div className="half-input-container">
+  </div>
+</div>
+<div className="map" id="gmp-map" style={{position: "relative", overflow: "hidden", width: "100%", height: "100%"}}></div>
+</div>
 
     var listofRoutes = <div><div className="flex gap-5 justify-between px-4 py-3 shadow-sm bg-sky-950">
     <div className="text-white">
@@ -97,11 +192,9 @@ export default function Navigation(data) {
         </button>
         <input className="relative justify-center text-center rounded-lg bg-neutral-200" style={{width: "100%"}} placeholder="From: Current Location">
         </input>
-        <input className="relative justify-center mt-5 text-center rounded-lg bg-neutral-200" style={{width: "100%"}} placeholder="To: Home">
-        </input>
+       {map}
+       <script src={src} defer></script>
         {directions}
-        <div id="map" className="self-center mt-20 mb-24 w-full border-4 border-cyan-300 border-dashed aspect-[1.85] max-w-[282px] stroke-[4px] stroke-cyan-300"
-></div>
       </div>
       {listofRoutes}
       {report}
@@ -110,8 +203,11 @@ export default function Navigation(data) {
   );
 }
 
-function getRoutes(to, from) {
+async function getRoutes(from, to) {
+  const link = `https://maps.googleapis.com/maps/api/directions/json?origin=${from}&destination=${to}d&key=${process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}`
+    const directions = await fetch(()=> {{link}
 
+    }).json();
 };
 
 function startRoute(route) {
