@@ -17,7 +17,7 @@ export default function Page() {
   const [time, setTime] = useState(6);
   const [permission, setPermission] = useState(false);
   const mediaRecorder = useRef(null);
-  const liveVideoFeed = useRef(null);
+  // const liveVideoFeed = useRef(null);
   const [recordingStatus, setRecordingStatus] = useState("inactive");
   const [stream, setStream] = useState(null);
   const [videoChunks, setVideoChunks] = useState([]);
@@ -56,7 +56,7 @@ export default function Page() {
         ]);
         setStream(combinedStream);
         //set videostream to live feed player
-        liveVideoFeed.current.srcObject = videoStream;
+        // liveVideoFeed.current.srcObject = videoStream;
       } catch (err) {
         alert(err.message);
       }
@@ -66,6 +66,7 @@ export default function Page() {
   };
 
   const startRecording = async () => {
+    console.log("started recording");
     setRecordingStatus("recording");
     const media = new MediaRecorder(stream, { mimeType });
     mediaRecorder.current = media;
@@ -80,12 +81,14 @@ export default function Page() {
   };
 
   const stopRecording = () => {
-    setPermission(false);
+    console.log("stopping recording");
     setRecordingStatus("inactive");
     mediaRecorder.current.stop();
     mediaRecorder.current.onstop = () => {
       const videoBlob = new Blob(videoChunks, { type: mimeType });
       const videoUrl = URL.createObjectURL(videoBlob);
+      console.log(videoBlob);
+      console.log(videoUrl);
       setRecordedVideo(videoUrl);
       setVideoChunks([]);
     };
@@ -135,7 +138,7 @@ export default function Page() {
       setStatus(Status.FINISHED);
       // sendMessage();
       startRecording();
-      return;
+      return stopRecording;
     }
 
     const intervalId = setTimeout(() => {
@@ -147,6 +150,8 @@ export default function Page() {
     // add timeLeft as a dependency to re-rerun the effect
     // when we update it
   }, [time, status]);
+
+  // return <></>;
 
   if (status == Status.CONFIRMATION) {
     return (
@@ -197,12 +202,12 @@ export default function Page() {
           Emergency Contacts Alerted
         </div>
 
-        <div class="left">
+        <div className="left">
           <div id="startButton" class="button">
             Start Recording
           </div>
           <h2>Preview</h2>
-          <video id="preview" width="160" height="120" autoplay muted></video>
+          <video id="preview" width="160" height="120" autoPlay muted></video>
         </div>
       </div>
     );
