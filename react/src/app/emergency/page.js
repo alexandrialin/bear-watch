@@ -23,7 +23,7 @@ export default function Page() {
   const [videoChunks, setVideoChunks] = useState([]);
   const [recordedVideo, setRecordedVideo] = useState(null);
   const router = useRouter();
-
+  let localVideoChunks = [];
   const startEmergency = () => {
     setStatus(Status.IN_EMERGENCY);
   };
@@ -70,25 +70,41 @@ export default function Page() {
     setRecordingStatus("recording");
     const media = new MediaRecorder(stream, { mimeType });
     mediaRecorder.current = media;
-    mediaRecorder.current.start();
-    let localVideoChunks = [];
+    mediaRecorder.current.start(1000);
+    // let localVideoChunks = [];
     mediaRecorder.current.ondataavailable = (event) => {
+      // console.log("data available");
       if (typeof event.data === "undefined") return;
       if (event.data.size === 0) return;
       localVideoChunks.push(event.data);
+      setVideoChunks(localVideoChunks);
+
+      // console.log("setting video chunks");
+      // console.log(localVideoChunks);
     };
-    setVideoChunks(localVideoChunks);
   };
 
   const stopRecording = () => {
     console.log("stopping recording");
+    console.log(videoChunks);
     setRecordingStatus("inactive");
     mediaRecorder.current.stop();
     mediaRecorder.current.onstop = () => {
-      const videoBlob = new Blob(videoChunks, { type: mimeType });
+      const videoBlob = new Blob(localVideoChunks, { type: mimeType });
       const videoUrl = URL.createObjectURL(videoBlob);
+      console.log(videoChunks);
+      console.log(localVideoChunks);
       console.log(videoBlob);
       console.log(videoUrl);
+
+      var a = document.createElement("a");
+      document.body.appendChild(a);
+      a.style = "display: none";
+      a.href = videoUrl;
+      a.download = "test.webm";
+      a.click();
+      window.URL.revokeObjectURL(videoUrl);
+
       setRecordedVideo(videoUrl);
       setVideoChunks([]);
     };
@@ -137,8 +153,6 @@ export default function Page() {
     if (time == 0) {
       setStatus(Status.FINISHED);
       // sendMessage();
-      startRecording();
-      return stopRecording;
     }
 
     const intervalId = setTimeout(() => {
@@ -150,6 +164,18 @@ export default function Page() {
     // add timeLeft as a dependency to re-rerun the effect
     // when we update it
   }, [time, status]);
+
+  useEffect(() => {
+    if (status == Status.FINISHED) {
+      startRecording();
+
+      const intervalId = setTimeout(() => {
+        stopRecording();
+      }, 5000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [status]);
 
   // return <></>;
 
