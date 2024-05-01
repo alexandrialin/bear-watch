@@ -1,5 +1,6 @@
 "use client";
-import * as React from "react";
+"use strict";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 
@@ -8,16 +9,65 @@ import Link from 'next/link';
 export default function Report(data) {
     const router = useRouter();
     var callBar;
-    console.log(data.searchParams);
+    const [fromLocation, setfromLocation] = useState([38.6, -122.07]);
+    const [address, setAddress] = useState("");
+    const [time, setTime] = useState();
+
     if (data.searchParams["isInCall"] == "true") {
        callBar = <div style=
        {{width: "100%", height: "20px", backgroundColor: "#2AFC7E", textAlign: "center", justifyContent:"center", display:"flex", alignItems: "center"}}>
             <Link href="bot-call" style={{fontSize:"10px", color: "#FFF"}}>In Call</Link>
        </div>; 
     }
+    
+    //get location when location is ready
+    useEffect(() => {
+      console.log(fromLocation);
+      setAddress(geocodeLatLng(fromLocation[0], fromLocation[1]));
+      console.log(address);
+      console.log(geocodeLatLng(fromLocation[0], fromLocation[1]));
+      setTime(new Date().toLocaleTimeString());
+    }, [fromLocation]);
 
+        //get location
+        useEffect(() => {
+        if ('geolocation' in navigator) {
+        const watchID = navigator.geolocation.watchPosition((position) => { 
+            let lat = position.coords.latitude;
+            let long = position.coords.longitude;
+            setfromLocation([lat, long]);
+        });
+        }
+      });
 
+    function geocodeLatLng(lat, long) {
+      const geocoder = new google.maps.Geocoder();
+      
+      const latlng = {
+        lat: parseFloat(lat),
+        lng: parseFloat(long),
+      };
+    
+      geocoder
+        .geocode({ location: latlng })
+        .then((response) => {
+          if (response.results[0]) {
+            console.log(response.results[0].formatted_address);
+            setAddress(response.results[0].formatted_address);
+            return response.results[0].formatted_address;
+          } else {
+            window.alert("No results found");
+          }
+        })
+        .catch((e) => window.alert("Geocoder failed due to: " + e));
+    }
+
+    const src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}&libraries=places,marker&solution_channel=GMP_QB_addressselection_v2_cAB`;
+  
   return (
+    <>
+    <head><script src={src} async defer></script></head>
+    <body>
     <div className="flex flex-col items-center py-6 pr-12 pl-3.5 mx-auto w-full border-solid bg-sky-950 border-[3px] border-slate-500 max-w-[480px]">
     {callBar}
       <button className="overflow-hidden relative flex-col justify-center items-start self-start px-4 text-xl text-white whitespace-nowrap aspect-[4] w-[60px]" onClick={()=> router.back()}>
@@ -43,11 +93,10 @@ export default function Report(data) {
           className="my-4 aspect-[1.1] w-[34px]"
         />
       </div>
+      <div style={{color: "white"}}>{address}</div>
+      <div style={{color: "white"}}>{time}</div>
       <div className="mt-4 text-base text-center text-white w-[298px]">
-        32 Hearst Ave, Berkeley 94704
-        {data.searchParams["Location"]}
         <br />
-        {data.searchParams["Time"]}
       </div>
       <div className="self-start mt-12 ml-16 text-base font-semibold text-amber-400">
         Type of Incident
@@ -78,6 +127,8 @@ export default function Report(data) {
         Submit
       </button>
     </div>
+    </body>
+    </>
   );
 }
 

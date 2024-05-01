@@ -68,7 +68,7 @@ export default function Page() {
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/25c70fe4d1b4555d8a716644d2674efa9a5f2abb4b4042d9ad8942825b479807?"
           className="shrink-0 aspect-[0.94] w-[31px]"
         />
-        <Link href={{pathname: "/report", query: {"isInCall": false, "Time": new Date().toLocaleTimeString()}}}>
+        <Link href={{pathname: "/report", query: {"isInCall": false}}}>
           <div className="flex-auto my-auto">Report Incident</div>
         </Link>
       </div>

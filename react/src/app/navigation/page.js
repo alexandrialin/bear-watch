@@ -1,6 +1,6 @@
 "use client";
 "use strict";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
     var directions = null;
     var emergency = null;
     var report = null;
+    const [fromLocation, setfromLocation] = useState([38.6, -122.07]);
 
     // in call bar at the top
     var callBar = null;
@@ -22,23 +23,20 @@ import { useRouter } from "next/navigation";
     }
 
     //get location
-    var lat;
-    var long;
+
     useEffect(() => {
     if ('geolocation' in navigator) {
     const watchID = navigator.geolocation.watchPosition((position) => { 
-        lat = position.coords.latitude;
-        long = position.coords.longitude;
-        console.log(position);
+        setfromLocation([position.coords.latitude,  position.coords.longitude]);
     });
     }
   });
+  console.log(fromLocation);
 
-  console.log(lat);
 //taken from gcp code
 const CONFIGURATION = {
 "ctaTitle": "Checkout",
-"mapOptions": {"center":{"lat":lat,"lng":long},"fullscreenControl":false,"mapTypeControl":false,"streetViewControl":false,"zoom":11,"zoomControl":true,"maxZoom":22,"mapId":""},
+"mapOptions": {"center":{"lat":fromLocation[0],"lng":fromLocation[1]},"fullscreenControl":false,"mapTypeControl":false,"streetViewControl":false,"zoom":15,"zoomControl":true,"maxZoom":22,"mapId":""},
 "mapsApiKey": process.env.NEXT_PUBLIC_API_GOOGLE_MAPS,
 "capabilities": {"addressAutocompleteControl":true,"mapDisplayControl":true,"ctaControl":false}
 };
@@ -48,6 +46,7 @@ const SHORT_NAME_ADDRESS_COMPONENT_TYPES =
 
 const ADDRESS_COMPONENT_TYPES_IN_FORM = [
 'location',
+'from',
 ];
 
 function getFormInputElement(componentType) {
@@ -86,6 +85,29 @@ if (place.geometry && place.geometry.location) {
 }
 }
 
+
+//get address from coordinates
+function geocodeLatLng(lat, long) {
+  const geocoder = new google.maps.Geocoder();
+  
+  const latlng = {
+    lat: parseFloat(lat),
+    lng: parseFloat(long),
+  };
+
+  geocoder
+    .geocode({ location: latlng })
+    .then((response) => {
+      if (response.results[0]) {
+        return response.results[0].formatted_address;
+      } else {
+        window.alert("No results found");
+      }
+    })
+    .catch((e) => window.alert("Geocoder failed due to: " + e));
+}
+
+
 useEffect(() => {async function initMap() {
 const {Map} = google.maps;
 const {AdvancedMarkerElement} = google.maps.marker;
@@ -93,26 +115,44 @@ const {Autocomplete} = google.maps.places;
 
 const mapOptions = CONFIGURATION.mapOptions;
 mapOptions.mapId = mapOptions.mapId || 'DEMO_MAP_ID';
-mapOptions.center = mapOptions.center || {lat: parseFloat(lat), lng: parseFloat(long)};
+mapOptions.center = mapOptions.center || {lat: fromLocation[0], lng:fromLocation[1]};
 const map = new Map(document.getElementById('gmp-map'), mapOptions);
 const marker = new AdvancedMarkerElement({map});
-const autocomplete = new Autocomplete(getFormInputElement('location'), {
+const autocompleteTo = new Autocomplete(getFormInputElement('location'), {
+  fields: ['address_components', 'geometry', 'name'],
+  types: ['address'],
+});
+const autocompleteFrom = new Autocomplete(getFormInputElement('from'), {
   fields: ['address_components', 'geometry', 'name'],
   types: ['address'],
 });
 
 var place; 
-autocomplete.addListener('place_changed', () => {
-  place = autocomplete.getPlace();
+var placeFrom;
+autocompleteTo.addListener('place_changed', () => {
+  place = autocompleteTo.getPlace();
+  placeFrom = autocompleteFrom.getPlace();
+  if (!placeFrom || !placeFrom.geometry) { //defaults to current location
+    placeFrom = geocodeLatLng(fromLocation[0], fromLocation[1]);
+  } else {
+    placeFrom = placeFrom.geometry.location;
+  }
   if (!place.geometry) {
     // User entered the name of a Place that was not suggested and
     // pressed the Enter key, or the Place Details request failed.
     window.alert(`No details available for input: '${place.name}'`);
     return;
   }
-  renderAddress(place, map, marker);
+  console.log(placeFrom);
+  const mark = new google.maps.Marker({
+        position: placeFrom,
+        map: map,
+      });
+      mark.setMap(map);
+     // renderAddress(placeFrom, map, mark);  
+    renderAddress(place, map, marker);
   fillInAddress(place);
- // getRoutes(place);
+ // getRoutes(placeFrom, place);
 });
 }
 initMap();
@@ -122,6 +162,8 @@ const src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBL
 
 const map =  <div className="card-container" style={{width:"100%", height: "100%"}}>
 <div className="panel">
+<input className="relative justify-center text-center rounded-lg bg-neutral-200" style={{width: "100%"}} placeholder="From: Current Location" id="from-input">
+        </input>
   <input type="text" className="relative justify-center mt-5 mb-5 text-center rounded-lg bg-neutral-200" style={{width: "100%"}} placeholder="To: Home" id="location-input"/>
   <div className="half-input-container">
   </div>
@@ -178,6 +220,9 @@ const map =  <div className="card-container" style={{width:"100%", height: "100%
 
 
   return (
+    <>
+    <head><script src={src} aysnc defer></script></head>
+    <body>
     <div className="flex flex-col mx-auto w-full text-xl bg-white border-solid border-[3px] border-slate-500 max-w-[480px]">
       <div className="flex overflow-hidden relative flex-col items-start pt-6 pr-9 pb-20 pl-3 w-full text-2xl aspect-[0.63] text-zinc-500">
         {callBar}
@@ -190,16 +235,15 @@ const map =  <div className="card-container" style={{width:"100%", height: "100%
             />
           Back
         </button>
-        <input className="relative justify-center text-center rounded-lg bg-neutral-200" style={{width: "100%"}} placeholder="From: Current Location">
-        </input>
        {map}
-       <script src={src} defer></script>
-        {directions}
+      {directions}
       </div>
       {listofRoutes}
       {report}
       {emergency}
     </div>
+    </body>
+    </>
   );
 }
 
