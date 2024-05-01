@@ -20,28 +20,27 @@ export default function Report(data) {
             <Link href="bot-call" style={{fontSize:"10px", color: "#FFF"}}>In Call</Link>
        </div>; 
     }
-       
-    //get location
-    useEffect(() => {
-    if ('geolocation' in navigator) {
-    navigator.geolocation.getCurrentPosition((position) => { 
-        let lat = position.coords.latitude;
-        let long = position.coords.longitude;
-        setAddress(geocodeLatLng(lat, long));
-        setfromLocation([lat, long]);
-        setTime(new Date().toLocaleTimeString());
-        const {Map} = google.maps;
-        const mapOptions = {"center":{"lat":lat,"lng":long},"fullscreenControl":false,"mapTypeControl":false,"streetViewControl":false,"zoom":17,"zoomControl":false,"maxZoom":17,"mapId":"2"};
-        const map = new Map(document.getElementById('gmp-map'), mapOptions);
-        const marker = new google.maps.Marker({
-          position: {lat: lat, lng: long},
-          map: map,
-        });
-        marker.setMap(map);
-    });
-    }
-  }, []);
 
+  //get location
+  useEffect(() => {
+  if ('geolocation' in navigator) {
+  navigator.geolocation.getCurrentPosition((position) => { 
+      let lat = position.coords.latitude;
+      let long = position.coords.longitude;
+      setAddress(geocodeLatLng(lat, long));
+      setfromLocation([lat, long]);
+      setTime(new Date().toLocaleTimeString());
+      const {Map} = google.maps;
+      const mapOptions = {"center":{"lat":lat,"lng":long},"fullscreenControl":false,"mapTypeControl":false,"streetViewControl":false,"zoom":17,"zoomControl":false,"maxZoom":17,"mapId":"2"};
+      const map = new Map(document.getElementById('gmp-map'), mapOptions);
+      const marker = new google.maps.Marker({
+        position: {lat: lat, lng: long},
+        map: map,
+      });
+      marker.setMap(map);
+  });
+  }
+}, []);
 
     async function geocodeLatLng(lat, long) {
       const geocoder = new google.maps.Geocoder();
@@ -65,7 +64,7 @@ export default function Report(data) {
       return add;
     }
 
-    const src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}&libraries=places,marker&solution_channel=GMP_QB_addressselection_v2_cAB`;
+const src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}&libraries=places,marker&solution_channel=GMP_QB_addressselection_v2_cAB`;
   
 async function submit() {
   const detail = document.getElementById("details").value;
@@ -78,10 +77,8 @@ async function submit() {
   }
   const body = {position: {lat: fromLocation[0], lng: fromLocation[1]}, details: detail, type: type};
   await fetch("/api/getReports", {method:"PUT", body:JSON.stringify(body)}).then(alert("Your report was submitted.")
-);
-    
+); 
 }
-
 
   return (
     <>

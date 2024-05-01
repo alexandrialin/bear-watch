@@ -90,24 +90,29 @@ export default function Page() {
     setRecordingStatus("inactive");
     mediaRecorder.current.stop();
     mediaRecorder.current.onstop = () => {
-      const videoBlob = new Blob(localVideoChunks, { type: mimeType });
-      const videoUrl = URL.createObjectURL(videoBlob);
-      console.log(videoChunks);
-      console.log(localVideoChunks);
-      console.log(videoBlob);
-      console.log(videoUrl);
-
-      var a = document.createElement("a");
-      document.body.appendChild(a);
-      a.style = "display: none";
-      a.href = videoUrl;
-      a.download = "test.webm";
-      a.click();
-      window.URL.revokeObjectURL(videoUrl);
+      saveRecording();
 
       setRecordedVideo(videoUrl);
       setVideoChunks([]);
     };
+  };
+
+  const saveRecording = () => {
+    const videoBlob = new Blob(localVideoChunks, { type: mimeType });
+    const videoUrl = URL.createObjectURL(videoBlob);
+    console.log("saving recording");
+    console.log(videoChunks);
+    console.log(localVideoChunks);
+    console.log(videoBlob);
+    console.log(videoUrl);
+
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+    a.href = videoUrl;
+    a.download = "test.webm";
+    a.click();
+    window.URL.revokeObjectURL(videoUrl);
   };
 
   const sendMessage = async () => {
@@ -169,15 +174,16 @@ export default function Page() {
     if (status == Status.FINISHED) {
       startRecording();
 
-      const intervalId = setTimeout(() => {
-        stopRecording();
+      const intervalId = setInterval(() => {
+        saveRecording();
       }, 5000);
 
-      return () => clearInterval(intervalId);
+      return () => {
+        clearInterval(intervalId);
+        stopRecording();
+      };
     }
   }, [status]);
-
-  // return <></>;
 
   if (status == Status.CONFIRMATION) {
     return (
@@ -226,14 +232,6 @@ export default function Page() {
       >
         <div className="text-white text-center text-2xl my-24 mx-10">
           Emergency Contacts Alerted
-        </div>
-
-        <div className="left">
-          <div id="startButton" class="button">
-            Start Recording
-          </div>
-          <h2>Preview</h2>
-          <video id="preview" width="160" height="120" autoPlay muted></video>
         </div>
       </div>
     );
