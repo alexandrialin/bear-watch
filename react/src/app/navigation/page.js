@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
     var directions = null;
     var emergency = null;
     var report = null;
-    const [fromLocation, setfromLocation] = useState([38.6, -122.07]);
+    const [fromLocation, setfromLocation] = useState([37.87, -122.267]);
 
     // in call bar at the top
     var callBar = null;
@@ -23,7 +23,6 @@ import { useRouter } from "next/navigation";
     }
 
     //get location
-
     useEffect(() => {
     if ('geolocation' in navigator) {
     const watchID = navigator.geolocation.watchPosition((position) => { 
@@ -31,50 +30,37 @@ import { useRouter } from "next/navigation";
     });
     }
   });
-  console.log(fromLocation);
 
 //taken from gcp code
-const CONFIGURATION = {
-"ctaTitle": "Checkout",
-"mapOptions": {"center":{"lat":fromLocation[0],"lng":fromLocation[1]},"fullscreenControl":false,"mapTypeControl":false,"streetViewControl":false,"zoom":15,"zoomControl":true,"maxZoom":22,"mapId":""},
-"mapsApiKey": process.env.NEXT_PUBLIC_API_GOOGLE_MAPS,
-"capabilities": {"addressAutocompleteControl":true,"mapDisplayControl":true,"ctaControl":false}
-};
-
 const SHORT_NAME_ADDRESS_COMPONENT_TYPES =
   new Set(['street_number', 'administrative_area_level_1', 'postal_code']);
 
-const ADDRESS_COMPONENT_TYPES_IN_FORM = [
-'location',
-'from',
-];
 
 function getFormInputElement(componentType) {
-return document.getElementById(`${componentType}-input`);
+  return document.getElementById(`${componentType}-input`);
 }
 
-function fillInAddress(place) {
-function getComponentName(componentType) {
-  for (const component of place.address_components || []) {
-    if (component.types[0] === componentType) {
-      return SHORT_NAME_ADDRESS_COMPONENT_TYPES.has(componentType) ?
-          component.short_name :
-          component.long_name;
+function fillInAddress(placeFrom, placeTo) {
+  function getComponentName(componentType, place) {
+    for (const component of place.address_components || []) {
+      if (component.types[0] === componentType) {
+        return SHORT_NAME_ADDRESS_COMPONENT_TYPES.has(componentType) ?
+            component.short_name :
+            component.long_name;
+      }
     }
+    return '';
   }
-  return '';
-}
 
-function getComponentText(componentType) {
-  return (componentType === 'location') ?
-      `${getComponentName('street_number')} ${getComponentName('route')}` :
-      getComponentName(componentType);
-}
+  function getComponentText(componentType, place) {
+    return (componentType === 'location') ?
+        `${getComponentName('street_number', place)} ${getComponentName('route', place)}` :
+        getComponentName(componentType, place);
+  }
 
-for (const componentType of ADDRESS_COMPONENT_TYPES_IN_FORM) {
-  getFormInputElement(componentType).value = getComponentText(componentType);
-}
-}
+    getFormInputElement("location").value = getComponentText("location", placeTo);
+    getFormInputElement("from").value = getComponentText("from", placeFrom);
+  }
 
 function renderAddress(place, map, marker) {
 if (place.geometry && place.geometry.location) {
@@ -85,26 +71,26 @@ if (place.geometry && place.geometry.location) {
 }
 }
 
-
 //get address from coordinates
-function geocodeLatLng(lat, long) {
+async function geocodeLatLng(lat, long) {
   const geocoder = new google.maps.Geocoder();
   
   const latlng = {
     lat: parseFloat(lat),
     lng: parseFloat(long),
   };
-
-  geocoder
+  let add;
+  await geocoder
     .geocode({ location: latlng })
     .then((response) => {
       if (response.results[0]) {
-        return response.results[0].formatted_address;
+        add = response.results[0].formatted_address;
       } else {
         window.alert("No results found");
       }
     })
     .catch((e) => window.alert("Geocoder failed due to: " + e));
+    return add;
 }
 
 
@@ -113,9 +99,7 @@ const {Map} = google.maps;
 const {AdvancedMarkerElement} = google.maps.marker;
 const {Autocomplete} = google.maps.places;
 
-const mapOptions = CONFIGURATION.mapOptions;
-mapOptions.mapId = mapOptions.mapId || 'DEMO_MAP_ID';
-mapOptions.center = mapOptions.center || {lat: fromLocation[0], lng:fromLocation[1]};
+const mapOptions = {"center":{"lat":fromLocation[0],"lng":fromLocation[1]},"fullscreenControl":false,"mapTypeControl":false,"streetViewControl":false,"zoom":15,"zoomControl":true,"maxZoom":22,"mapId":"1"};
 const map = new Map(document.getElementById('gmp-map'), mapOptions);
 const marker = new AdvancedMarkerElement({map});
 const autocompleteTo = new Autocomplete(getFormInputElement('location'), {
@@ -128,12 +112,12 @@ const autocompleteFrom = new Autocomplete(getFormInputElement('from'), {
 });
 
 var place; 
-var placeFrom;
-autocompleteTo.addListener('place_changed', () => {
+var placeFrom = null;
+autocompleteTo.addListener('place_changed', async () => {
   place = autocompleteTo.getPlace();
   placeFrom = autocompleteFrom.getPlace();
   if (!placeFrom || !placeFrom.geometry) { //defaults to current location
-    placeFrom = geocodeLatLng(fromLocation[0], fromLocation[1]);
+    placeFrom = await geocodeLatLng(fromLocation[0], fromLocation[1]);
   } else {
     placeFrom = placeFrom.geometry.location;
   }
@@ -143,16 +127,13 @@ autocompleteTo.addListener('place_changed', () => {
     window.alert(`No details available for input: '${place.name}'`);
     return;
   }
-  console.log(placeFrom);
-  const mark = new google.maps.Marker({
-        position: placeFrom,
+  const mark = new AdvancedMarkerElement({
+        position: {lat: fromLocation[0], lng: fromLocation[1]},
         map: map,
       });
       mark.setMap(map);
-     // renderAddress(placeFrom, map, mark);  
-    renderAddress(place, map, marker);
-  fillInAddress(place);
- // getRoutes(placeFrom, place);
+  renderAddress(place, map, marker);
+  fillInAddress(placeFrom, place);
 });
 }
 initMap();

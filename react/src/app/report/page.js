@@ -9,7 +9,6 @@ import Link from 'next/link';
 export default function Report(data) {
     const router = useRouter();
     var callBar;
-    const [fromLocation, setfromLocation] = useState([38.6, -122.07]);
     const [address, setAddress] = useState("");
     const [time, setTime] = useState();
 
@@ -19,47 +18,48 @@ export default function Report(data) {
             <Link href="bot-call" style={{fontSize:"10px", color: "#FFF"}}>In Call</Link>
        </div>; 
     }
-    
-    //get location when location is ready
+       
+    //get location
     useEffect(() => {
-      console.log(fromLocation);
-      setAddress(geocodeLatLng(fromLocation[0], fromLocation[1]));
-      console.log(address);
-      console.log(geocodeLatLng(fromLocation[0], fromLocation[1]));
-      setTime(new Date().toLocaleTimeString());
-    }, [fromLocation]);
-
-        //get location
-        useEffect(() => {
-        if ('geolocation' in navigator) {
-        const watchID = navigator.geolocation.watchPosition((position) => { 
-            let lat = position.coords.latitude;
-            let long = position.coords.longitude;
-            setfromLocation([lat, long]);
+    if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition((position) => { 
+        let lat = position.coords.latitude;
+        let long = position.coords.longitude;
+        setAddress(geocodeLatLng(lat, long));
+        setTime(new Date().toLocaleTimeString());
+        const {Map} = google.maps;
+        const mapOptions = {"center":{"lat":lat,"lng":long},"fullscreenControl":false,"mapTypeControl":false,"streetViewControl":false,"zoom":17,"zoomControl":false,"maxZoom":17,"mapId":"2"};
+        const map = new Map(document.getElementById('gmp-map'), mapOptions);
+        const marker = new google.maps.Marker({
+          position: {lat: lat, lng: long},
+          map: map,
         });
-        }
-      });
+        marker.setMap(map);
+    });
+    }
+  }, []);
 
-    function geocodeLatLng(lat, long) {
+
+    async function geocodeLatLng(lat, long) {
       const geocoder = new google.maps.Geocoder();
       
       const latlng = {
         lat: parseFloat(lat),
         lng: parseFloat(long),
       };
-    
-      geocoder
+
+      let add;
+      await geocoder
         .geocode({ location: latlng })
         .then((response) => {
           if (response.results[0]) {
-            console.log(response.results[0].formatted_address);
-            setAddress(response.results[0].formatted_address);
-            return response.results[0].formatted_address;
+            add = response.results[0].formatted_address;
           } else {
             window.alert("No results found");
           }
         })
         .catch((e) => window.alert("Geocoder failed due to: " + e));
+      return add;
     }
 
     const src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}&libraries=places,marker&solution_channel=GMP_QB_addressselection_v2_cAB`;
@@ -82,15 +82,9 @@ export default function Report(data) {
         Report Incident
       </div>
       <div className="flex overflow-hidden relative flex-col justify-center items-center px-16 py-20 mt-5 w-full aspect-[1.32] max-w-[298px]">
-        <img
-          loading="lazy"
-          srcSet="..."
+        <div
+          id="gmp-map"
           className="object-cover absolute inset-0 size-full"
-        />
-        <img
-          loading="lazy"
-          srcSet="..."
-          className="my-4 aspect-[1.1] w-[34px]"
         />
       </div>
       <div style={{color: "white"}}>{address}</div>
