@@ -157,7 +157,7 @@ export default function Page() {
 
     if (time == 0) {
       setStatus(Status.FINISHED);
-      // sendMessage();
+      sendMessage();
     }
 
     const intervalId = setTimeout(() => {
