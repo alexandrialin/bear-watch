@@ -35,7 +35,6 @@ import { useRouter } from "next/navigation";
 const SHORT_NAME_ADDRESS_COMPONENT_TYPES =
   new Set(['street_number', 'administrative_area_level_1', 'postal_code']);
 
-
 function getFormInputElement(componentType) {
   return document.getElementById(`${componentType}-input`);
 }
@@ -62,15 +61,6 @@ function fillInAddress(placeFrom, placeTo) {
     getFormInputElement("from").value = getComponentText("from", placeFrom);
   }
 
-function renderAddress(place, map, marker) {
-if (place.geometry && place.geometry.location) {
-  map.setCenter(place.geometry.location);
-  marker.position = place.geometry.location;
-} else {
-  marker.position = null;
-}
-}
-
 //get address from coordinates, taken from gcp and adapted
 async function geocodeLatLng(lat, long) {
   const geocoder = new google.maps.Geocoder();
@@ -93,6 +83,7 @@ async function geocodeLatLng(lat, long) {
     return add;
 }
 
+var listofRoutes = [];
 
 useEffect(() => {async function initMap() {
 const {Map} = google.maps;
@@ -116,10 +107,11 @@ var placeFrom = null;
 autocompleteTo.addListener('place_changed', async () => {
   place = autocompleteTo.getPlace();
   placeFrom = autocompleteFrom.getPlace();
+  var fromPlace;
   if (!placeFrom || !placeFrom.geometry) { //defaults to current location
-    placeFrom = await geocodeLatLng(fromLocation[0], fromLocation[1]);
+    fromPlace = await geocodeLatLng(fromLocation[0], fromLocation[1]);
   } else {
-    placeFrom = placeFrom.geometry.location;
+    fromPlace = placeFrom;
   }
   if (!place.geometry) {
     // User entered the name of a Place that was not suggested and
@@ -127,19 +119,12 @@ autocompleteTo.addListener('place_changed', async () => {
     window.alert(`No details available for input: '${place.name}'`);
     return;
   }
-  const mark = new AdvancedMarkerElement({
-        position: {lat: fromLocation[0], lng: fromLocation[1]},
-        map: map,
-        content: new PinElement({
-          background: "#FBBC04",
-        }).element,
-      });
-  mark.setMap(map);
-  marker.content = new PinElement({
-    background: "#FBBC04",
-  }).element;
-  renderAddress(place, map, marker);
-  fillInAddress(placeFrom, place);
+  fillInAddress(fromPlace, place);
+;
+
+for (let route in getRoutes(placeFrom? fromPlace.geometry.location:{lat: fromLocation[0], lng: fromLocation[1]}, place.geometry.location, map)) {
+    listofRoutes.push(route);
+  }
 });
 
 //get reports and place on map
@@ -149,6 +134,9 @@ for (report in reports.json()) {
     position: report["position"],
     map: map,
     title: report["type"] + ": " + report["details"],
+    content: new PinElement({
+      background: "#FBBC04",
+    }).element,
   });
   alert.setMap(map);
 }
@@ -169,26 +157,8 @@ const map =  <div className="card-container" style={{width:"100%", height: "100%
 <div className="map" id="gmp-map" style={{position: "relative", overflow: "hidden", width: "100%", height: "100%"}}></div>
 </div>
 
-    var listofRoutes = <div><div className="flex gap-5 justify-between px-4 py-3 shadow-sm bg-sky-950">
-    <div className="text-white">
-      Most Direct Route
-      <br />
-      0.7 Mi
-      <ul>
-        <li>
-          <span className="text-sm">Warning: Recent Crime Reported</span>
-        </li>
-      </ul>
-    </div>
-    <div className="flex flex-col justify-center self-start text-center text-black">
-      <button className="justify-center px-5 py-3 bg-green-400 rounded-md">
-        Go
-        <br />
-        15 Mins
-      </button>
-    </div>
-  </div>
-  <div className="flex gap-5 justify-between px-4 pt-5 pb-1.5 w-full shadow-sm bg-sky-950">
+async function getRoutes(from, to, map) {
+  const available =  [<div className="flex gap-5 justify-between px-4 pt-5 pb-1.5 w-full shadow-sm bg-sky-950">
     <div className="text-white">
       Safest Route
       <br />
@@ -214,12 +184,61 @@ const map =  <div className="card-container" style={{width:"100%", height: "100%
         16 Mins
       </div>
     </button>
-  </div></div>;
+  </div>];
 
+    const DirectionsService = new google.maps.DirectionsService();
+    const DirectionsRenderer = new google.maps.DirectionsRenderer();
+    DirectionsRenderer.setMap(map);
+
+    const request = {
+      origin: from,
+      destination: to,
+      travelMode: 'WALKING',
+      provideRouteAlternatives: true,
+    }
+    const routes = DirectionsService.route(request, function(result, status) {
+        if (status == 'OK') {
+          DirectionsRenderer.setDirections(result);
+        }
+      });    
+
+      for (let route in routes[routes]) {
+        let leg = route["legs"][0];
+        const option = <div className="flex gap-5 justify-between px-4 pt-5 pb-1.5 w-full shadow-sm bg-sky-950">
+          <div className="text-white">{leg["distance"]["text"]}
+          <ul>{route["warnings"]}</ul>
+          </div>
+          <div className="flex flex-col justify-center self-start text-center text-black">
+            <button className="justify-center px-5 py-3 bg-green-400 rounded-md" onClick={()=>startRoute(leg["steps"])}>
+              Go<br/>
+              {leg["duration"]}
+            </button>
+        </div>
+        </div>;
+        available.push(option);
+
+    }
+    
+    return available;
+};
+
+function startRoute(route) {
+    listofRoutes = null;
+    directions = <div>{route["html_instructions"]}</div>;
+    emergency = <div className="justify-center items-center px-16 py-8 text-2xl text-center text-white whitespace-nowrap bg-red-600 rounded-3xl max-w-[271px]">
+        <Link href="emergency">Emergency</Link></div>
+    report = <div className="flex flex-col justify-center text-3xl text-center text-white whitespace-nowrap max-w-[244px]">
+    <div className="justify-center items-center px-16 py-7 w-full bg-amber-500 rounded-xl">
+      <Link href={{pathname:"/report", query: {"isInCall": data.searchParams["isInCall"], "Time": new Date().getTime()}}}>
+      Report
+      </Link>
+    </div>
+  </div>
+};
 
   return (
     <>
-    <head><script src={src} aysnc="true" defer></script></head>
+    <head><script src={src} aysnc defer></script></head>
     <body>
     <div className="flex flex-col mx-auto w-full text-xl bg-white border-solid border-[3px] border-slate-500 max-w-[480px]">
       <div className="flex overflow-hidden relative flex-col items-start pt-6 pr-9 pb-20 pl-3 w-full text-2xl aspect-[0.63] text-zinc-500">
@@ -236,7 +255,7 @@ const map =  <div className="card-container" style={{width:"100%", height: "100%
        {map}
       {directions}
       </div>
-      {listofRoutes}
+      <div>{listofRoutes}</div>
       {report}
       {emergency}
     </div>
@@ -244,24 +263,3 @@ const map =  <div className="card-container" style={{width:"100%", height: "100%
     </>
   );
 }
-
-async function getRoutes(from, to) {
-  const link = `https://maps.googleapis.com/maps/api/directions/json?origin=${from}&destination=${to}d&key=${process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}`
-    const directions = await fetch(()=> {link
-
-    }).json();
-};
-
-function startRoute(route) {
-    listofRoutes = null;
-    directions = <div></div>;
-    emergency = <div className="justify-center items-center px-16 py-8 text-2xl text-center text-white whitespace-nowrap bg-red-600 rounded-3xl max-w-[271px]">
-        <Link href="emergency">Emergency</Link></div>
-    report = <div className="flex flex-col justify-center text-3xl text-center text-white whitespace-nowrap max-w-[244px]">
-    <div className="justify-center items-center px-16 py-7 w-full bg-amber-500 rounded-xl">
-      <Link href={{pathname:"/report", query: {"isInCall": data.searchParams["isInCall"], "Time": new Date().getTime()}}}>
-      Report
-      </Link>
-    </div>
-  </div>
-};
