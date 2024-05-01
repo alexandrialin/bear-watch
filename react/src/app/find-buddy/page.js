@@ -3,8 +3,12 @@ import * as React from "react";
 import './style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {LoadScript, Autocomplete } from '@react-google-maps/api';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 function Buddy() {
+
+  const router = useRouter();
 
   const [startPlace, setStartPlace] = React.useState(null);
   const [startautocomplete, setStartAutocomplete] = React.useState(null);
@@ -27,20 +31,25 @@ function Buddy() {
     setEndPlace(place);
   }
 
+
+
+
   const submit = () => {
     localStorage.setItem('startLat', startPlace.geometry.location.lat());
     localStorage.setItem('startLon', startPlace.geometry.location.lng());
     localStorage.setItem('endLat', endPlace.geometry.location.lat());
     localStorage.setItem('endLon', endPlace.geometry.location.lng());
-    window.location.href = '/partners';
+    router.push('partners');
   }
 
   return (
     <main>
       <div className="background">
-        <div className = "back-btn">
-          &lt; Back
-        </div>
+      <Link href ="/">
+          <div className = "back-btn">
+            &lt; Back
+          </div>
+        </Link>
         <div className = "location-input">
         <LoadScript
             googleMapsApiKey ={process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}
