@@ -6,6 +6,7 @@
     justify-content: center;
     margin-left: auto;
     margin-right: auto;
+    position: relative;
 }
 
 .location-input {
@@ -31,6 +32,8 @@
 .back-btn{
     color: white;
     position: absolute;
-    left: 25%;
-    top: 3%;
+    left: 0;
+    /* position: absolute;
+    left: 25%; */
+    /* top: 3%; */
 }

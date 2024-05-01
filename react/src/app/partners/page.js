@@ -81,10 +81,20 @@ function Partners(){
           );
     }
 
+    const callClicked = (name, identity) => {
+        localStorage.setItem('selectedName', name);
+        localStorage.setItem('selectedIdentity', identity);
+        router.push('/call-confirmation');
+    }
+
+    const botClicked = () => {
+        router.push('/bot-call');
+    }
+
     const showCallPartners = () => {
         return(
             <div className = "users">
-                <div className = 'user'>
+                <div className = 'user' onClick={() => callClicked("Jane Doe", "Female identifying")}>
                     <div className = "profilepic">
                         <span className="dot"></span>
                     </div>
@@ -92,7 +102,7 @@ function Partners(){
                         Jane Doe <br/>Female Identifying <br/> Human 
                     </div>
                 </div>
-                <div className = 'user'>
+                <div className = 'user' onClick={() => callClicked("Bob Smith", "Male identifying")}>
                     <div className = "profilepic">
                         <span className="dot"></span>
                     </div>
@@ -100,7 +110,7 @@ function Partners(){
                         Bob Smith <br/>Male Identifying <br/> Human 
                     </div>
                 </div>
-                <div className = 'user'>
+                <div className = 'user' onClick={() => botClicked()}>
                     <div className = "profilepic">
                         <span className="dot"></span>
                     </div>

@@ -6,6 +6,7 @@
     justify-content: center;
     margin-left: auto;
     margin-right: auto;
+    position: relative;
 }
 
 .selection{
@@ -61,6 +62,5 @@
 .back-btn{
     color: white;
     position: absolute;
-    left: 25%;
-    top: 3%;
+    left:0;
 }

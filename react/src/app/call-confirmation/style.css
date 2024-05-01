@@ -1,0 +1,59 @@
+.background{
+    width: 390px;
+    height: 844px; 
+    background-color: #081F45;
+    display: flex;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.user{
+    display: flex;
+    flex-direction: column;
+}
+
+.topText{
+    color: #FFC82D;
+    font-size: 40px;
+    text-align: center;
+    margin: 20px;
+}
+
+.dot {
+    height: 70px;
+    width: 70px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 10px;
+  }
+
+.top{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.name{
+    text-align: center;
+    color: #FFC82D;
+    font-size: 35px;
+}
+
+.info{
+    text-align: center;
+    color: #FFC82D;
+    font-size: 15px;
+}
+
+.btn{
+    margin: 5px;
+}
+
+.buttons{
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    bottom: 5%;
+}
