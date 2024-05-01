@@ -2,6 +2,7 @@
 "use strict";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import "./style.css";
 import Link from 'next/link';
 
 
@@ -9,6 +10,7 @@ import Link from 'next/link';
 export default function Report(data) {
     const router = useRouter();
     var callBar;
+    const [fromLocation, setfromLocation] = useState([37.87, -122.267]);
     const [address, setAddress] = useState("");
     const [time, setTime] = useState();
 
@@ -26,6 +28,7 @@ export default function Report(data) {
         let lat = position.coords.latitude;
         let long = position.coords.longitude;
         setAddress(geocodeLatLng(lat, long));
+        setfromLocation([lat, long]);
         setTime(new Date().toLocaleTimeString());
         const {Map} = google.maps;
         const mapOptions = {"center":{"lat":lat,"lng":long},"fullscreenControl":false,"mapTypeControl":false,"streetViewControl":false,"zoom":17,"zoomControl":false,"maxZoom":17,"mapId":"2"};
@@ -64,6 +67,22 @@ export default function Report(data) {
 
     const src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}&libraries=places,marker&solution_channel=GMP_QB_addressselection_v2_cAB`;
   
+async function submit() {
+  const detail = document.getElementById("details").value;
+  var checks = document.querySelectorAll(".check");
+  var type = [];
+  for (let i = 0; i < checks.length; i++) {
+    if (checks[i].checked) {
+      type.push(checks[i].id);
+    }
+  }
+  const body = {position: {lat: fromLocation[0], lng: fromLocation[1]}, details: detail, type: type};
+  await fetch("/api/getReports", {method:"PUT", body:JSON.stringify(body)}).then(alert("Your report was submitted.")
+);
+    
+}
+
+
   return (
     <>
     <head><script src={src} async defer></script></head>
@@ -87,6 +106,7 @@ export default function Report(data) {
           className="object-cover absolute inset-0 size-full"
         />
       </div>
+      <br />
       <div style={{color: "white"}}>{address}</div>
       <div style={{color: "white"}}>{time}</div>
       <div className="mt-4 text-base text-center text-white w-[298px]">
@@ -97,26 +117,22 @@ export default function Report(data) {
       </div>
       <div className="flex gap-5 mt-1.5 text-sm text-black">
         <div className="flex flex-col flex-1">
-          <div className="justify-center px-2.5 py-7 bg-amber-400 rounded-xl">
-            Suspicious Behavior
-          </div>
-          <div className="justify-center px-2.5 py-10 mt-2.5 whitespace-nowrap bg-amber-400 rounded-xl">
-            Harassment
-          </div>
+          <input type="checkbox" className="check" id="Suspicious Behavior" value="value" style={{"display": "none"}}/>
+            <label htmlFor="Suspicious Behavior">Suspicious Behavior</label>
+          <input type="checkbox" className='check' id="Harrassment" value="value" style={{"display": "none"}}/>
+            <label htmlFor="Harrassment">Harassment</label>
         </div>
         <div className="flex flex-col flex-1">
-          <div className="justify-center px-2.5 py-7 bg-amber-400 rounded-xl">
-            Unsafe Environment
-          </div>
-          <div className="justify-center px-2.5 py-10 mt-2.5 whitespace-nowrap bg-amber-400 rounded-xl">
-            Emergency Situation
-          </div>
+          <input type="checkbox" className="check" id="Unsafe Environment" value="value" style={{"display": "none"}}/>
+            <label htmlFor="Unsafe Environment">Unsafe Environment</label>
+          <input type="checkbox" className="check" id="Emergency Situation" value="value" style={{"display": "none"}}/>
+            <label htmlFor="Emergency Situation">Emergency Situation</label>
         </div>
       </div>
       <div className="self-start mt-7 ml-16 text-base font-semibold text-amber-400">
         Details
       </div>
-      <input className="shrink-0 mt-5 rounded-xl bg-zinc-300 bg-opacity-40 h-[98px] w-[238px]" />
+      <input id="details" className="shrink-0 mt-5 rounded-xl bg-zinc-300 bg-opacity-40 h-[98px] w-[238px]" />
       <button className="justify-center items-start px-10 py-2.5 mt-6 max-w-full text-xl font-semibold text-black whitespace-nowrap bg-amber-400 rounded-xl w-[146px]" onClick={()=>submit()}>
         Submit
       </button>
@@ -124,15 +140,5 @@ export default function Report(data) {
     </body>
     </>
   );
-}
-
-function submit() {
-    return (
-        <div className="flex flex-col items-center py-6 pr-12 pl-3.5 mx-auto w-full border-solid bg-sky-950 border-[3px] border-slate-500 max-w-[480px]">
-            <div>Your report was sent.</div>
-            <div onClick={()=> router.back()}>Return</div>
-
-</div>
-    )
 }
 

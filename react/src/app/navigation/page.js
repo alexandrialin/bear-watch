@@ -71,7 +71,7 @@ if (place.geometry && place.geometry.location) {
 }
 }
 
-//get address from coordinates
+//get address from coordinates, taken from gcp and adapted
 async function geocodeLatLng(lat, long) {
   const geocoder = new google.maps.Geocoder();
   
@@ -96,7 +96,7 @@ async function geocodeLatLng(lat, long) {
 
 useEffect(() => {async function initMap() {
 const {Map} = google.maps;
-const {AdvancedMarkerElement} = google.maps.marker;
+const {AdvancedMarkerElement, PinElement} = google.maps.marker;
 const {Autocomplete} = google.maps.places;
 
 const mapOptions = {"center":{"lat":fromLocation[0],"lng":fromLocation[1]},"fullscreenControl":false,"mapTypeControl":false,"streetViewControl":false,"zoom":15,"zoomControl":true,"maxZoom":22,"mapId":"1"};
@@ -130,11 +130,28 @@ autocompleteTo.addListener('place_changed', async () => {
   const mark = new AdvancedMarkerElement({
         position: {lat: fromLocation[0], lng: fromLocation[1]},
         map: map,
+        content: new PinElement({
+          background: "#FBBC04",
+        }).element,
       });
-      mark.setMap(map);
+  mark.setMap(map);
+  marker.content = new PinElement({
+    background: "#FBBC04",
+  }).element;
   renderAddress(place, map, marker);
   fillInAddress(placeFrom, place);
 });
+
+//get reports and place on map
+const reports = await fetch("/api/getReports", {method: "GET"});
+for (report in reports.json()) {
+  const alert = new AdvancedMarkerElement({
+    position: report["position"],
+    map: map,
+    title: report["type"] + ": " + report["details"],
+  });
+  alert.setMap(map);
+}
 }
 initMap();
 });
@@ -202,7 +219,7 @@ const map =  <div className="card-container" style={{width:"100%", height: "100%
 
   return (
     <>
-    <head><script src={src} aysnc defer></script></head>
+    <head><script src={src} aysnc="true" defer></script></head>
     <body>
     <div className="flex flex-col mx-auto w-full text-xl bg-white border-solid border-[3px] border-slate-500 max-w-[480px]">
       <div className="flex overflow-hidden relative flex-col items-start pt-6 pr-9 pb-20 pl-3 w-full text-2xl aspect-[0.63] text-zinc-500">
@@ -230,7 +247,7 @@ const map =  <div className="card-container" style={{width:"100%", height: "100%
 
 async function getRoutes(from, to) {
   const link = `https://maps.googleapis.com/maps/api/directions/json?origin=${from}&destination=${to}d&key=${process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}`
-    const directions = await fetch(()=> {{link}
+    const directions = await fetch(()=> {link
 
     }).json();
 };
