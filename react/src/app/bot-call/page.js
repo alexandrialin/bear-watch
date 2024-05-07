@@ -210,7 +210,7 @@ const formatTime = () => {
             src="https://cdn.builder.io/api/v1/image/assets/TEMP/25c70fe4d1b4555d8a716644d2674efa9a5f2abb4b4042d9ad8942825b479807?"
             className="shrink-0 aspect-[0.94] w-[31px]"
           />
-          <div className="flex-auto my-auto">Report Incident</div>
+          <Link href="report" className="flex-auto my-auto">Report Incident</Link>
         </div>
         <Link href="emergency">
           <div className="flex gap-3 px-6 py-3 mt-3.5 max-w-full text-base font-bold text-center text-amber-400 rounded-xl border-2 border-amber-400 border-solid w-[225px] bg-red-700">

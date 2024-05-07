@@ -63,8 +63,6 @@ export default function Report(data) {
         .catch((e) => window.alert("Geocoder failed due to: " + e));
       return add;
     }
-
-const src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}&libraries=places,marker&solution_channel=GMP_QB_addressselection_v2_cAB`;
   
 async function submit() {
   const detail = document.getElementById("details").value;
@@ -81,9 +79,6 @@ async function submit() {
 }
 
   return (
-    <>
-    <head><script src={src} async defer></script></head>
-    <body>
     <div className="flex flex-col items-center py-6 pr-12 pl-3.5 mx-auto w-full border-solid bg-sky-950 border-[3px] border-slate-500 max-w-[480px]">
     {callBar}
       <button className="overflow-hidden relative flex-col justify-center items-start self-start px-4 text-xl text-white whitespace-nowrap aspect-[4] w-[60px]" onClick={()=> router.back()}>
@@ -97,7 +92,7 @@ async function submit() {
       <div className="mt-2.5 text-2xl font-semibold text-center text-amber-400">
         Report Incident
       </div>
-      <div className="flex overflow-hidden relative flex-col justify-center items-center px-16 py-20 mt-5 w-full aspect-[1.32] max-w-[298px]">
+      <div className="flex relative flex-col justify-center items-center w-full aspect-[1.0]">
         <div
           id="gmp-map"
           className="object-cover absolute inset-0 size-full"
@@ -134,8 +129,6 @@ async function submit() {
         Submit
       </button>
     </div>
-    </body>
-    </>
   );
 }
 

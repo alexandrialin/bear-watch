@@ -17,7 +17,13 @@ export default function Page() {
       window.speechSynthesis.onvoiceschanged = null;
     };
   }, []);
+
+  const src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_API_GOOGLE_MAPS}&libraries=places,marker&solution_channel=GMP_QB_addressselection_v2_cAB`;
+
   return (
+    <>
+    <head><script src={src} aysnc defer></script></head>
+    <body>
     <div
       className="flex flex-col items-center px-6 pt-10 pb-6 mx-auto w-full bg-sky-950 max-w-[480px] mx-auto h-screen w-screen"
       style={{ backgroundColor: "#081F45" }}
@@ -88,6 +94,7 @@ export default function Page() {
         />
         </Link>
       </div>
-    </div>
+    </div></body>
+    </>
   );
 }
